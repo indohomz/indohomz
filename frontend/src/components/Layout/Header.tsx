@@ -1,7 +1,28 @@
-import React from 'react'
-import { Bell, Search, User, Settings } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Bell, Search, User, Settings, Sun, Moon } from 'lucide-react'
 
 const Header: React.FC = () => {
+  const [dark, setDark] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('ra_theme') === 'dark'
+    } catch {
+      return false
+    }
+  })
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (dark) {
+      root.classList.add('dark')
+      localStorage.setItem('ra_theme', 'dark')
+    } else {
+      root.classList.remove('dark')
+      localStorage.setItem('ra_theme', 'light')
+    }
+  }, [dark])
+
+  const toggleTheme = () => setDark(d => !d)
+
   return (
     <header className="glass-header border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -19,6 +40,10 @@ const Header: React.FC = () => {
 
         {/* Right Section */}
         <div className="flex items-center space-x-4">
+          {/* Theme Toggle */}
+          <button onClick={toggleTheme} className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
           {/* Notifications */}
           <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Bell className="h-5 w-5" />

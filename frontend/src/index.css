@@ -23,6 +23,25 @@
   --heading-size: 2.25rem; /* 36px */
 }
 
+/* Dark theme variables */
+.dark {
+  --bg: #0f1724;
+  --panel: #0b1220;
+  --text: #e6eef8;
+  --muted: #9aa7bf;
+  --card-shadow: rgba(2,6,23,0.6);
+}
+
+/* Apply variables */
+body {
+  background: linear-gradient(180deg, rgba(59,130,246,0.06), rgba(139,92,246,0.03));
+  color: var(--text, #0f1724);
+}
+
+.card {
+  background: var(--panel, #ffffff);
+}
+
 @layer components {
   .card {
     @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6 transform transition-all duration-200;
