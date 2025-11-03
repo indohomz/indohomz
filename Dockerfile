@@ -1,12 +1,12 @@
 # Minimal Dockerfile for Retail-Analytics-Platform
 # Builds and runs the backend service located in ./backend
 
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
 # Install system deps and Rust toolchain so packages that require compilation
-# (pydantic-core, some cryptography builds, etc.) can build inside the image.
+# (pydantic-core, some cryptography builds, etc.) can build in the builder stage.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
@@ -18,23 +18,30 @@ RUN apt-get update \
         libssl-dev \
         libffi-dev \
     && rm -rf /var/lib/apt/lists/* \
-    # Install rustup (non-interactive) to get cargo/rustc for building wheels
     && curl https://sh.rustup.rs -sSf | sh -s -- -y \
-    # Make cargo available in PATH for subsequent RUN steps
     && . /root/.cargo/env
 
-# Ensure cargo is on PATH for all subsequent layers
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Copy and install Python dependencies from backend
+# Copy and install Python dependencies in the builder
 COPY backend/requirements.txt ./requirements.txt
 RUN python -m pip install --upgrade pip setuptools wheel \
     && python -m pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
+# Copy app code (so builds that compile extensions with C-extensions can use sources)
 COPY backend/ ./
+
+# ---- runtime stage ----
+FROM python:3.11-slim AS runtime
+WORKDIR /app
+
+# Copy site-packages from builder to runtime
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy application code
+COPY --from=builder /app /app
 
 EXPOSE 8000
 
-# Start the FastAPI app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
