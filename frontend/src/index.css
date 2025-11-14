@@ -2,17 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  ============================================================================
+  Design Tokens (CSS Variables)
+  ----------------------------------------------------------------------------
+  These variables provide a semantic layer over Tailwind utilities allowing
+  runtime theme transitions (light <-> dark) and potential future theming.
+
+  Core Groups:
+  - Colors: --color-* tokens used for backgrounds, text, borders, accents
+  - Radius: unified curvature scale (base, lg)
+  - Shadows: elevation levels (card, glass via .glass utility)
+  - Gradients: brand gradient for headings & emphasis
+  - Transitions: easing curves for micro-interactions
+
+  Extend cautiously: prefer adding semantic tokens (e.g., --color-surface-alt)
+  instead of raw palette values. Keep mapping small & meaningful.
+  ============================================================================
+*/
 @layer base {
-  * {
-    /* keep borders subtle by default */
-    @apply border-border;
+  :root {
+    --color-bg: theme(colors.neutral.50);
+    --color-bg-alt: #ffffff;
+    --color-border: theme(colors.neutral.200);
+    --color-text: theme(colors.neutral.800);
+    --color-text-muted: theme(colors.neutral.500);
+    --color-primary: theme(colors.primary.600);
+    --color-primary-hover: theme(colors.primary.700);
+    --color-accent: theme(colors.accent.600);
+    --color-success: theme(colors.success.600);
+    --color-warning: theme(colors.warning.500);
+    --color-danger: theme(colors.danger.600);
+    --radius-base: 0.75rem;
+    --radius-lg: 1.25rem;
+    --shadow-card: 0 4px 16px rgba(31,41,55,0.08);
+    --gradient-brand: linear-gradient(90deg, theme(colors.primary.600), theme(colors.accent.600));
+    --transition-soft: cubic-bezier(0.22,1,0.36,1);
+    --easing-soft: cubic-bezier(0.22,1,0.36,1);
+    --easing-standard: cubic-bezier(0.4,0,0.2,1);
+    --duration-fast: 150ms;
+    --duration-medium: 300ms;
+    --duration-slow: 450ms;
   }
-  
+
+  .dark {
+    --color-bg: theme(colors.neutral.900);
+    --color-bg-alt: theme(colors.neutral.800);
+    --color-border: theme(colors.neutral.600);
+    --color-text: theme(colors.neutral.100);
+    --color-text-muted: theme(colors.neutral.300);
+    --shadow-card: 0 6px 24px rgba(0,0,0,0.45);
+    /* Adjust semantic accent elevations for dark mode */
+    --color-primary-hover: theme(colors.primary.500);
+  }
+
   body {
-    /* subtle vibrant gradient background and good default font color */
-    @apply bg-gradient-to-br from-primary-50 via-white to-purple-50 text-gray-900;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply font-sans antialiased selection:bg-primary-600 selection:text-white;
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: background .35s var(--transition-soft), color .35s var(--transition-soft);
   }
+  .theme-fade body {
+    transition: background .35s var(--transition-soft), color .35s var(--transition-soft);
+  }
+  /* High-contrast focus ring for keyboard users */
+  :focus-visible {
+    outline: 3px solid theme('colors.indigo.500');
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-shell { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .page-grid { @apply grid gap-6 md:gap-8; }
+  .glass { @apply backdrop-blur-md bg-white/70 dark:bg-neutral-800/70; }
+  .card { @apply rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-6 shadow-sm transition-transform duration-300 hover:shadow-lg hover:-translate-y-0.5; }
+  /* Removed custom .card-gradient utility (using inline Tailwind classes in components instead) */
+  .card-muted { @apply bg-neutral-50 dark:bg-neutral-900 border-none shadow-none; }
+  .card-interactive { @apply cursor-pointer relative overflow-hidden; }
+  .card-interactive::after { content:""; @apply absolute inset-0 opacity-0 transition-opacity duration-300 bg-gradient-to-br from-primary-600/10 to-accent-600/10; }
+  .card-interactive:hover::after { @apply opacity-100; }
+
+  .btn { @apply inline-flex items-center gap-2 rounded-lg font-medium px-4 py-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]; }
+  .btn-primary { @apply text-white shadow-md bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500; }
+  .btn-secondary { @apply bg-neutral-100 text-neutral-800 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600; }
+  .btn-outline { @apply border border-primary-600 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-600/10; }
+  .btn-ghost { @apply text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700; }
+
+  .badge { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100; }
+  .badge-success { @apply bg-success-100 text-success-700; }
+  .badge-warning { @apply bg-warning-100 text-warning-700; }
+  .badge-danger { @apply bg-danger-100 text-danger-700; }
+
+  .gradient-text { @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600; }
+  .input { @apply w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition; }
+  .skeleton {
+    @apply rounded-md;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%), #e5e7eb; /* neutral-200 */
+    background-size: 200% 100%;
+    animation: shimmer 1.2s var(--easing-standard) infinite;
+  }
+  .dark .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0) 100%), #404040; /* neutral-700 */
+    background-size: 200% 100%;
+  }
+
+  /* Typography scale */
+  /* Typography scale (utility classes) */
+  .display-1 { font-size: 2.25rem; line-height:1.15; font-weight:800; letter-spacing:-0.02em; }
+  @media (min-width:640px){ .display-1 { font-size:3rem; } }
+  @media (min-width:768px){ .display-1 { font-size:3.75rem; } }
+  .h1 { font-size:1.875rem; line-height:1.2; font-weight:700; }
+  @media (min-width:640px){ .h1 { font-size:2.25rem; } }
+  .h2 { font-size:1.5rem; line-height:1.3; font-weight:600; }
+  @media (min-width:640px){ .h2 { font-size:1.875rem; } }
+  .h3 { font-size:1.25rem; line-height:1.4; font-weight:600; }
+  .muted { color: var(--color-text-muted); }
+}
+
+@layer utilities {
+  .fade-in { animation: fadeIn .4s var(--transition-soft); }
+  .scale-in { animation: scaleIn .25s var(--transition-soft); }
+  .route-fade { animation: routeFade .35s var(--transition-soft); }
+  /* Marquee utility for brand belt */
+  .marquee { width: max(100%, 64rem); animation: marquee 25s linear infinite; }
 }
 
 :root {
@@ -23,81 +136,20 @@
   --heading-size: 2.25rem; /* 36px */
 }
 /* Dark / Light theme variables */
-html.dark {
-  --bg: #071025;
-  --panel: #071427;
-  --text: #e6eef8;
-  --muted: #9aa7bf;
-  --card-shadow: rgba(2,6,23,0.6);
+/* Removed legacy duplicated theme & card styles; consolidated above. */
+
+.glass-header { backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); background:rgba(255,255,255,0.65); border:1px solid rgba(255,255,255,0.4); box-shadow:0 8px 32px rgba(31,41,55,0.12); }
+.dark .glass-header { background:rgba(30,41,59,0.6); border-color:rgba(51,65,85,0.6); }
+
+/* Motion safety */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .skeleton { animation: none !important; }
 }
 
-html.light {
-  --bg: linear-gradient(180deg, rgba(59,130,246,0.06), rgba(139,92,246,0.03));
-  --panel: #ffffff;
-  --text: #0f1724;
-  --muted: #64748b;
-  --card-shadow: rgba(16,24,40,0.08);
-}
-
-/* Apply variables */
-body {
-  background: var(--bg);
-  color: var(--text, #0f1724);
-}
-
-.card {
-  background: var(--panel, #ffffff);
-}
-
-@layer components {
-  .card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6 transform transition-all duration-200;
-    will-change: transform;
-  }
-
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(16,24,40,0.08);
-  }
-  
-  .btn-primary {
-    /* glossy gradient primary button */
-    @apply bg-gradient-to-r from-primary-600 to-purple-600 text-white font-semibold py-2 px-5 rounded-xl shadow-md transform hover:-translate-y-0.5 transition-all duration-200;
-    box-shadow: 0 8px 20px rgba(37,99,235,0.12);
-  }
-  
-  .btn-secondary {
-    @apply bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-  }
-  
-  .btn-outline {
-    @apply border border-primary-600 text-primary-600 hover:bg-primary-50 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-  }
-  
-  .input-field {
-    @apply w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm;
-  }
-  
-  .metric-card {
-    @apply bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-shadow duration-200;
-  }
-  
-  .sidebar-item {
-    @apply flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200 cursor-pointer;
-  }
-  
-  .sidebar-item.active {
-    @apply bg-gradient-to-r from-primary-50 to-white text-primary-700 border-r-4 border-primary-600;
-  }
-
-  .logo-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-purple-600;
-  }
-}
-
-/* small utility for glass header */
-.glass-header {
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
+/* Animations */
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.98) } to { opacity: 1; transform: scale(1) } }
+@keyframes routeFade { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes shimmer { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+@keyframes marquee { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }

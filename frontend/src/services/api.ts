@@ -287,7 +287,7 @@ export const reportService = {
     api.get('/reports/types'),
   
   askQuestion: (question: string) =>
-    api.post('/reports/ask', { question }),
+    api.post('/reports/ask', null, { params: { question } }),
 }
 
 export const healthService = {

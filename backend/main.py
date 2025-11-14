@@ -16,6 +16,17 @@ from app.core.config import settings
 import os
 
 # Create database tables with error handling
+app = FastAPI(title="Retail Analytics API")
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 try:
     models.Base.metadata.create_all(bind=engine)
     print("Database tables created successfully")

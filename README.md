@@ -62,6 +62,12 @@ A comprehensive full-stack application for retail businesses to analyze sales da
 - **Responsive Design**: TailwindCSS for beautiful UI
 - **Real-time Updates**: React Query for efficient data fetching
 
+### Frontend Design System & UX
+- Semantic tokens (CSS variables) for colors, radii, shadows, gradients; smooth theme transitions (light/dark)
+- Reusable components: Metric cards, DataTable (sorting, selection, visibility, server-side mode), Empty/Error states
+- Chart theme unification with `useChartTheme` and AccessibleChart wrappers for ARIA-friendly charts
+- Micro-interactions: route fade, button press scale, card hover; motion-safe via prefers-reduced-motion
+
 ### Key Capabilities
 - 📊 **Sales Analytics**: Comprehensive sales performance tracking
 - 🔮 **Predictive Modeling**: AI-powered sales forecasting
@@ -358,8 +364,21 @@ pytest
 ### Frontend Tests
 ```bash
 cd frontend
+npm install
 npm test
+# Headless run
+npm run test:run
+# Optional UI runner
+npm run test:ui
 ```
+
+Included smoke tests (Vitest + React Testing Library):
+- Header theme toggle (light/dark)
+- Sidebar active route aria-current
+- DataTable sorting interaction
+- ReportGenerator streaming flow (mocked API)
+
+Test config lives in `frontend/vitest.config.ts` with jsdom environment and `src/test/setup.ts`.
 
 ## 📈 Performance Optimization
 
@@ -372,8 +391,27 @@ npm test
 ### Frontend
 - Code splitting with React.lazy
 - Memoization for expensive calculations
-- Virtualization for large data sets
+- Virtualization for large data sets (see `frontend/src/hooks/useVirtualList.ts` and `frontend/docs/performance.md`)
 - Image optimization
+
+More tips in `frontend/docs/performance.md`.
+
+## ♿ Accessibility
+- ARIA landmarks in layout; skip link and focus-visible outlines for keyboard users
+- Chart accessibility via `AccessibleChart` wrapper (figure + aria-label + description)
+- Live region announcements for streamed AI content
+- Color contrast tuned for dark mode badges and muted text
+
+## 🧩 Component Usage Examples
+- Charts: `SalesChart`, `TopProducts` with shared theme and accessibility wrappers
+- Tables: `DataTable` with client/server modes, selection, visibility toggles
+- Reports: `ReportGenerator` and `BusinessQnA` with streamed responses
+
+## 🖼️ Screenshots
+Add screenshots to `frontend/docs/screenshots/` and link them here:
+- Dashboard: `frontend/docs/screenshots/dashboard.png`
+- Customers: `frontend/docs/screenshots/customers.png`
+- Reports: `frontend/docs/screenshots/reports.png`
 
 ## 🔒 Security Features
 

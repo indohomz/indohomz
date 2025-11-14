@@ -1,5 +1,6 @@
-import React from 'react'
-import { useQuery } from '@tanstack/react-query'
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
   DollarSign, 
@@ -9,15 +10,37 @@ import {
   AlertTriangle,
   Brain,
   Target
-} from 'lucide-react'
-import { analyticsService, salesService } from '../services/api'
-import MetricCard from '../components/Dashboard/MetricCard'
-import SalesChart from '../components/Dashboard/SalesChart'
-import TopProducts from '../components/Dashboard/TopProducts'
-import RecentSales from '../components/Dashboard/RecentSales'
-import InventoryAlerts from '../components/Dashboard/InventoryAlerts'
-import PredictionInsights from '../components/Dashboard/PredictionInsights'
-import heroUrl from '../assets/hero-illustration.svg?url'
+} from 'lucide-react';
+import { analyticsService, salesService } from '../services/api';
+import MetricCard from '../components/Dashboard/MetricCard';
+import PageHeader from '../components/Layout/PageHeader';
+import SalesChart from '../components/Dashboard/SalesChart';
+import TopProducts from '../components/Dashboard/TopProducts';
+import RecentSales from '../components/Dashboard/RecentSales';
+import InventoryAlerts from '../components/Dashboard/InventoryAlerts';
+import PredictionInsights from '../components/Dashboard/PredictionInsights';
+
+// Animation variants for staggered card animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
 
 const Dashboard: React.FC = () => {
   // Fetch dashboard data
@@ -44,110 +67,131 @@ const Dashboard: React.FC = () => {
   const isLoading = salesLoading || inventoryLoading || customerLoading
 
   return (
-    <div className="space-y-10">
-      {/* Hero Section */}
-      <div className="relative rounded-xl overflow-hidden mb-8 animate-fade-in">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-400 via-purple-400 to-primary-700 opacity-80"></div>
-        <div className="relative z-10 p-10 flex flex-col md:flex-row items-center justify-between">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-3 animate-slide-up">Welcome to Retail Analytics Platform</h1>
-            <p className="text-lg text-white/80 mb-4 animate-fade-in">AI-powered insights, beautiful dashboards, and smart business decisions—all in one place.</p>
-            <div className="flex space-x-4 mt-4">
-              <button className="btn-primary shadow-lg animate-bounce-subtle">Get Started</button>
-              <button className="btn-outline text-white border-white hover:bg-white/10 animate-fade-in">Learn More</button>
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <img src={heroUrl} alt="Analytics Hero" className="w-72 drop-shadow-2xl animate-slide-up" />
-          </div>
-        </div>
-      </div>
+    <motion.div 
+      className="space-y-8 p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {/* Dashboard Header */}
-      <div className="flex items-center justify-between animate-fade-in">
-        <div>
-          <h2 className="text-3xl font-bold text-primary-700">Dashboard</h2>
-          <p className="text-gray-600 mt-1">Welcome back! Here's what's happening with your retail business.</p>
-        </div>
-        <div className="flex space-x-3">
-          <button className="btn-outline">
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Export Data
-          </button>
-          <button className="btn-primary">
-            <Brain className="h-4 w-4 mr-2" />
-            Generate AI Report
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Dashboard Overview"
+        subtitle="Welcome back! Here's what's happening with your retail business."
+        actions={(
+          <>
+            <button className="btn btn-outline">
+              <TrendingUp className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only sm:ml-2">Export Data</span>
+            </button>
+            <button className="btn btn-primary">
+              <Brain className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only sm:ml-2">Generate AI Report</span>
+            </button>
+          </>
+        )}
+      />
 
-  {/* Key Metrics */}
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 animate-fade-in">
-        <MetricCard
-          title="Total Revenue"
-          value={`$${salesOverview?.total_sales?.toLocaleString() || '0'}`}
-          icon={DollarSign}
-          trend="up"
-          change="+12.5% vs last month"
-        />
-        <MetricCard
-          title="Total Orders"
-          value={salesOverview?.total_orders?.toLocaleString() || '0'}
-          icon={ShoppingCart}
-          trend="up"
-          change="+8.2% vs last month"
-        />
-        <MetricCard
-          title="Active Customers"
-          value={customerInsights?.total_customers?.toLocaleString() || '0'}
-          icon={Users}
-          trend="up"
-          change="+5.7% vs last month"
-        />
-        <MetricCard
-          title="Products in Stock"
-          value={inventoryStatus?.total_products?.toLocaleString() || '0'}
-          icon={Package}
-          trend="down"
-          change="-2.1% vs last month"
-        />
-      </div>
+      {/* Key Metrics */}
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={itemVariants}>
+          <MetricCard
+            title="Total Revenue"
+            value={`$${(salesOverview?.total_sales || 0).toLocaleString()}`}
+            icon={DollarSign}
+            trend="up"
+            change="+12.5%"
+            description="vs last month"
+            className="card"
+            iconClassName="text-success-600"
+            isLoading={isLoading}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <MetricCard
+            title="Total Orders"
+            value={salesOverview?.total_orders?.toLocaleString() || '0'}
+            icon={ShoppingCart}
+            trend="up"
+            change="+8.2%"
+            description="vs last month"
+            className="card"
+            iconClassName="text-primary-600"
+            isLoading={isLoading}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <MetricCard
+            title="Active Customers"
+            value={customerInsights?.total_customers?.toLocaleString() || '0'}
+            icon={Users}
+            trend="up"
+            change="+5.7%"
+            description="vs last month"
+            className="card"
+            iconClassName="text-accent-600"
+            isLoading={isLoading}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <MetricCard
+            title="Inventory Alerts"
+            value={inventoryStatus?.low_stock_products || 0}
+            icon={AlertTriangle}
+            trend="down"
+            change={`${inventoryStatus?.out_of_stock_products || 0} OOS`}
+            description="Low stock items"
+            className="card"
+            iconClassName="text-danger-600"
+            isLoading={isLoading}
+          />
+        </motion.div>
+      </motion.div>
 
-  {/* Charts and Insights Row */}
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+      {/* Charts and Insights Row */}
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+      >
         {/* Sales Trend Chart */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Sales Trend</h3>
-            <select className="text-sm border border-gray-300 rounded-lg px-3 py-1">
+            <h3 className="h3">Sales Trend</h3>
+            <select className="input h-9 text-sm">
               <option>Last 30 days</option>
               <option>Last 7 days</option>
-              <option>Last 90 days</option>
             </select>
           </div>
-          <SalesChart data={salesOverview?.sales_trend || []} isLoading={isLoading} />
+          <SalesChart data={(salesOverview?.sales_trend || []).map(d => ({ date: d.date, amount: (d.revenue ?? 0) }))} isLoading={isLoading} />
         </div>
 
         {/* Top Products */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Top Products</h3>
-            <button className="text-primary-600 text-sm hover:text-primary-700">
-              View all
-            </button>
+            <h3 className="h3">Top Products</h3>
+            <button className="btn btn-ghost h-9 text-sm">View all</button>
           </div>
-          <TopProducts products={salesOverview?.top_products || []} isLoading={isLoading} />
+          <TopProducts products={(salesOverview?.top_products || []).map(p => ({ name: p.name, sales: (p.total_quantity ?? 0), revenue: (p.total_revenue ?? 0) }))} isLoading={isLoading} />
         </div>
-      </div>
+      </motion.div>
 
-  {/* Additional Insights Row */}
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+      {/* Additional Insights Row */}
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3 }}
+      >
         {/* Recent Sales */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Sales</h3>
-            <button className="text-primary-600 text-sm hover:text-primary-700">
-              View all
-            </button>
+            <h3 className="h3">Recent Sales</h3>
+            <button className="btn btn-ghost h-9 text-sm">View all</button>
           </div>
           <RecentSales sales={recentSales || []} isLoading={recentSalesLoading} />
         </div>
@@ -155,8 +199,8 @@ const Dashboard: React.FC = () => {
         {/* Inventory Alerts */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Inventory Alerts</h3>
-            <div className="flex items-center text-orange-600">
+            <h3 className="h3">Inventory Alerts</h3>
+            <div className="flex items-center text-danger-600">
               <AlertTriangle className="h-4 w-4 mr-1" />
               <span className="text-sm font-medium">
                 {inventoryStatus?.low_stock_products || 0} items
@@ -173,39 +217,32 @@ const Dashboard: React.FC = () => {
         {/* AI Predictions */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">AI Predictions</h3>
-            <div className="flex items-center text-purple-600">
+            <h3 className="h3">AI Predictions</h3>
+            <div className="flex items-center text-accent-600">
               <Brain className="h-4 w-4 mr-1" />
               <span className="text-sm font-medium">Smart Insights</span>
             </div>
           </div>
           <PredictionInsights />
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick Actions */}
-      <div className="card bg-gradient-to-br from-primary-50 via-white to-purple-50 shadow-lg animate-fade-in">
-        <h3 className="text-xl font-bold text-primary-700 mb-6">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <button className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-primary-200 rounded-xl hover:border-primary-400 hover:bg-primary-100 transition-all duration-200 shadow-md animate-bounce-subtle">
-            <Package className="h-10 w-10 text-primary-600 mb-2" />
-            <span className="text-base font-semibold text-primary-700">Add Product</span>
-          </button>
-          <button className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-primary-200 rounded-xl hover:border-primary-400 hover:bg-primary-100 transition-all duration-200 shadow-md animate-bounce-subtle">
-            <Users className="h-10 w-10 text-primary-600 mb-2" />
-            <span className="text-base font-semibold text-primary-700">Add Customer</span>
-          </button>
-          <button className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-primary-200 rounded-xl hover:border-primary-400 hover:bg-primary-100 transition-all duration-200 shadow-md animate-bounce-subtle">
-            <ShoppingCart className="h-10 w-10 text-primary-600 mb-2" />
-            <span className="text-base font-semibold text-primary-700">Record Sale</span>
-          </button>
-          <button className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-primary-200 rounded-xl hover:border-primary-400 hover:bg-primary-100 transition-all duration-200 shadow-md animate-bounce-subtle">
-            <Target className="h-10 w-10 text-primary-600 mb-2" />
-            <span className="text-base font-semibold text-primary-700">View Analytics</span>
-          </button>
+      <motion.div 
+        className="card card-muted"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.4 }}
+      >
+        <h3 className="h3 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button className="btn btn-secondary"><Package className="h-4 w-4" /> Add Product</button>
+          <button className="btn btn-secondary"><Users className="h-4 w-4" /> Add Customer</button>
+          <button className="btn btn-secondary"><ShoppingCart className="h-4 w-4" /> Record Sale</button>
+          <button className="btn btn-secondary"><Target className="h-4 w-4" /> View Analytics</button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

@@ -1,7 +1,7 @@
 # Minimal Dockerfile for Retail-Analytics-Platform
 # Builds and runs the backend service located in ./backend
 
-FROM python:3.11-slim AS builder
+FROM python:3.11-bullseye AS builder
 
 WORKDIR /app
 
@@ -34,7 +34,7 @@ RUN python -m pip install --upgrade pip setuptools wheel \
 COPY backend/ ./
 
 # ---- runtime stage ----
-FROM python:3.11-slim AS runtime
+FROM python:3.11-bullseye AS runtime
 WORKDIR /app
 
 # Copy site-packages from builder to runtime
