@@ -1,4 +1,4 @@
-import { Fragment, ReactNode } from 'react'
+import { Fragment } from 'react'
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import {
   Bell,
@@ -14,19 +14,13 @@ import {
 import { useTheme } from '../../hooks/useTheme'
 
 interface HeaderProps {
-  onToggleSidebar?: () => void
   onOpenMobileSidebar?: () => void
-  sidebarCollapsed?: boolean
   onOpenCommandPalette?: () => void
-  breadcrumbs?: ReactNode
 }
 
 export default function Header({ 
-  onToggleSidebar, 
   onOpenMobileSidebar, 
-  sidebarCollapsed, 
-  onOpenCommandPalette,
-  breadcrumbs 
+  onOpenCommandPalette
 }: HeaderProps) {
   const { dark, toggle: toggleTheme } = useTheme()
 

@@ -128,7 +128,12 @@ export default function Inventory() {
             dense={dense}
             selectable
             getRowId={(p) => p.id}
-            onSelectionChange={(ids) => console.log('Selected inventory IDs', ids)}
+            onSelectionChange={(ids) => {
+              // Handle inventory selection for bulk operations
+              if (ids.length > 0) {
+                // Future: implement bulk update/delete
+              }
+            }}
             initialVisibility={{ reorder_level: false }}
           />
         )}

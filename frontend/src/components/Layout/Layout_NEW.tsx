@@ -6,6 +6,7 @@ import MobileSidebar from './MobileSidebar'
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
     <div className="min-h-screen flex bg-neutral-50 dark:bg-neutral-900">
@@ -14,13 +15,13 @@ export default function Layout() {
 
       {/* Desktop Sidebar (Static) */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <Sidebar />
+        <Sidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <Header onMobileMenuClick={() => setSidebarOpen(true)} />
+        <Header onOpenMobileSidebar={() => setSidebarOpen(true)} />
         
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">

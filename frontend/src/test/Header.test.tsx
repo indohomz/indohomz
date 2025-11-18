@@ -7,9 +7,7 @@ describe('Header', () => {
   it('toggles theme', () => {
     const { rerender } = render(
       <Header
-        onToggleSidebar={noop}
         onOpenMobileSidebar={noop}
-        sidebarCollapsed={false}
         onOpenCommandPalette={noop}
       />
     )
@@ -19,6 +17,6 @@ describe('Header', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(true)
     fireEvent.click(btn)
     expect(document.documentElement.classList.contains('dark')).toBe(false)
-    rerender(<Header onToggleSidebar={noop} onOpenMobileSidebar={noop} sidebarCollapsed={false} onOpenCommandPalette={noop} />)
+    rerender(<Header onOpenMobileSidebar={noop} onOpenCommandPalette={noop} />)
   })
 })

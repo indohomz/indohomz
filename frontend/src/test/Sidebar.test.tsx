@@ -8,7 +8,7 @@ describe('Sidebar', () => {
   it('marks current route with aria-current in collapsed mode', () => {
     render(
       <MemoryRouter initialEntries={["/products"]}>
-        <Sidebar collapsed={true} mobileOpen={false} onCloseMobile={noop} />
+        <Sidebar isCollapsed={true} onToggle={noop} />
       </MemoryRouter>
     )
     const link = screen.getByTitle('Products')
