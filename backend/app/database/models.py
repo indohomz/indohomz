@@ -38,7 +38,8 @@ class Customer(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    sales = relationship("Sale", back_populates="customer")
+    # sales relationship removed because Sale model has been commented out
+    # sales = relationship("Sale", back_populates="customer")
 
 """
 class Sale(Base):

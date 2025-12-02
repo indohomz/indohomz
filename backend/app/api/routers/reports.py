@@ -5,7 +5,8 @@ from datetime import datetime
 from app.database.connection import get_db
 from app.schemas.schemas import ReportRequest, ReportResponse, ReportType
 from app.services.genai_service import GenAIService
-from app.services.crud import sale_service, product_service, customer_service
+from app.services.crud import product_service, customer_service
+# from app.services.crud import sale_service  # DISABLED: not adapted for properties yet
 
 router = APIRouter()
 genai_service = GenAIService()

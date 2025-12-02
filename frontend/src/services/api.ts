@@ -66,6 +66,18 @@ export interface Product {
   updated_at?: string
 }
 
+export interface Property {
+  id: number
+  title: string
+  price: string
+  location: string
+  image_url?: string
+  amenities?: string
+  is_available: boolean
+  created_at: string
+  updated_at?: string
+}
+
 export interface Customer {
   id: number
   first_name: string
@@ -170,6 +182,26 @@ export const productService = {
   
   getLowStockProducts: () =>
     api.get('/products/low-stock/alert'),
+}
+
+export const propertyService = {
+  getProperties: (params?: { skip?: number; limit?: number; location?: string; is_available?: boolean }) =>
+    api.get<Property[]>('/properties', { params }),
+  
+  getProperty: (id: number) =>
+    api.get<Property>(`/properties/${id}`),
+  
+  createProperty: (data: Omit<Property, 'id' | 'created_at' | 'updated_at'>) =>
+    api.post<Property>('/properties', data),
+  
+  updateProperty: (id: number, data: Partial<Property>) =>
+    api.put<Property>(`/properties/${id}`, data),
+  
+  deleteProperty: (id: number) =>
+    api.delete(`/properties/${id}`),
+  
+  getAvailableProperties: () =>
+    api.get<Property[]>('/properties', { params: { is_available: true } }),
 }
 
 export const customerService = {

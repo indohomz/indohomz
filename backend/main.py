@@ -7,7 +7,8 @@ import uvicorn
 from datetime import datetime
 
 # Import routers
-from app.api.routers import products, sales, customers, analytics, reports
+from app.api.routers import products, customers, analytics, reports
+# from app.api.routers import sales  # Disabled: models not yet adapted for properties
 # from app.api.routers import ml_models  # Disabled for initial deployment
 from app.database.connection import get_db, engine
 from app.database import models
@@ -61,7 +62,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(products.router, prefix="/api/v1/properties", tags=["properties"])
-app.include_router(sales.router, prefix="/api/v1/sales", tags=["sales"])
+# app.include_router(sales.router, prefix="/api/v1/sales", tags=["sales"])  # Disabled: models not adapted
 app.include_router(customers.router, prefix="/api/v1/customers", tags=["customers"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
 # app.include_router(ml_models.router, prefix="/api/v1/ml", tags=["machine-learning"])  # Disabled
