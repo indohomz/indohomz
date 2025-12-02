@@ -3,26 +3,18 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
 
-class Product(Base):
-    __tablename__ = "products"
-    
+class Property(Base):
+    __tablename__ = "properties"
+
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False, index=True)
-    category = Column(String(100), nullable=False, index=True)
-    subcategory = Column(String(100), nullable=True)
-    brand = Column(String(100), nullable=True, index=True)
-    price = Column(Float, nullable=False)
-    cost = Column(Float, nullable=True)
-    description = Column(Text, nullable=True)
-    sku = Column(String(50), unique=True, nullable=False, index=True)
-    stock_quantity = Column(Integer, default=0)
-    reorder_level = Column(Integer, default=10)
-    is_active = Column(Boolean, default=True)
+    title = Column(String(255), nullable=False, index=True)
+    price = Column(String(100), nullable=False)
+    location = Column(String(100), nullable=False, default="Gurgaon")
+    image_url = Column(String(1024), nullable=True)
+    amenities = Column(String(500), nullable=False, default="Wifi, AC, Power Backup")
+    is_available = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
-    # Relationships
-    sales = relationship("Sale", back_populates="product")
 
 class Customer(Base):
     __tablename__ = "customers"
@@ -48,6 +40,7 @@ class Customer(Base):
     # Relationships
     sales = relationship("Sale", back_populates="customer")
 
+"""
 class Sale(Base):
     __tablename__ = "sales"
     
@@ -70,7 +63,9 @@ class Sale(Base):
     # Relationships
     product = relationship("Product", back_populates="sales")
     customer = relationship("Customer", back_populates="sales")
+"""
 
+"""
 class Inventory(Base):
     __tablename__ = "inventory"
     
@@ -85,7 +80,9 @@ class Inventory(Base):
     
     # Relationships
     product = relationship("Product")
+"""
 
+"""
 class SalesPrediction(Base):
     __tablename__ = "sales_predictions"
     
@@ -99,3 +96,4 @@ class SalesPrediction(Base):
     
     # Relationships
     product = relationship("Product")
+"""

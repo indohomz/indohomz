@@ -6,73 +6,79 @@ from app.database import models
 from app.schemas import schemas
 
 class ProductService:
+    """Service adapted to work with Property model while keeping
+    the public service name to minimize changes across the codebase.
+    """
     def get_product(self, db: Session, product_id: int):
-        return db.query(models.Product).filter(models.Product.id == product_id).first()
-    
+        return db.query(models.Property).filter(models.Property.id == product_id).first()
+
     def get_product_by_sku(self, db: Session, sku: str):
-        return db.query(models.Product).filter(models.Product.sku == sku).first()
-    
+        # Properties don't have SKU; return None
+        return None
+
     def get_products(
-        self, 
-        db: Session, 
-        skip: int = 0, 
+        self,
+        db: Session,
+        skip: int = 0,
         limit: int = 100,
         category: Optional[str] = None,
         is_active: Optional[bool] = None
     ):
-        query = db.query(models.Product)
-        
-        if category:
-            query = query.filter(models.Product.category == category)
-        if is_active is not None:
-            query = query.filter(models.Product.is_active == is_active)
-            
+        # Ignore category/is_active filters — return properties
+        query = db.query(models.Property)
         return query.offset(skip).limit(limit).all()
-    
+
     def get_products_by_category(
-        self, 
-        db: Session, 
-        category: str, 
-        skip: int = 0, 
+        self,
+        db: Session,
+        category: str,
+        skip: int = 0,
         limit: int = 100
     ):
-        return db.query(models.Product).filter(
-            models.Product.category == category,
-            models.Product.is_active == True
-        ).offset(skip).limit(limit).all()
-    
+        # Not applicable for properties; return empty list
+        return []
+
     def get_low_stock_products(self, db: Session):
-        return db.query(models.Product).filter(
-            models.Product.stock_quantity <= models.Product.reorder_level,
-            models.Product.is_active == True
-        ).all()
-    
-    def create_product(self, db: Session, product: schemas.ProductCreate):
-        db_product = models.Product(**product.dict())
-        db.add(db_product)
+        # Not applicable for properties
+        return []
+
+    def create_product(self, db: Session, product: schemas.PropertyCreate):
+        # Map property schema to Property model fields
+        payload = product.dict()
+        db_obj = models.Property(
+            title=payload.get("title"),
+            price=payload.get("price"),
+            location=payload.get("location", "Gurgaon"),
+            image_url=payload.get("image_url"),
+            amenities=payload.get("amenities", "Wifi, AC, Power Backup"),
+            is_available=payload.get("is_available", True)
+        )
+        db.add(db_obj)
         db.commit()
-        db.refresh(db_product)
-        return db_product
-    
+        db.refresh(db_obj)
+        return db_obj
+
     def update_product(
-        self, 
-        db: Session, 
-        product_id: int, 
-        product_update: schemas.ProductUpdate
+        self,
+        db: Session,
+        product_id: int,
+        product_update: schemas.PropertyUpdate
     ):
         db_product = self.get_product(db, product_id)
         if db_product:
             update_data = product_update.dict(exclude_unset=True)
             for field, value in update_data.items():
+                # map price/title/location/image_url/amenities/is_available
                 setattr(db_product, field, value)
             db.commit()
             db.refresh(db_product)
         return db_product
-    
+
     def delete_product(self, db: Session, product_id: int):
         db_product = self.get_product(db, product_id)
         if db_product:
-            db_product.is_active = False
+            # Soft-delete by marking unavailable
+            db_product.is_available = False
             db.commit()
         return db_product
 

@@ -3,40 +3,31 @@ from datetime import datetime
 from typing import Optional, List
 from enum import Enum
 
-# Product Schemas
-class ProductBase(BaseModel):
-    name: str = Field(..., min_length=1, max_length=255)
-    category: str = Field(..., min_length=1, max_length=100)
-    subcategory: Optional[str] = Field(None, max_length=100)
-    brand: Optional[str] = Field(None, max_length=100)
-    price: float = Field(..., gt=0)
-    cost: Optional[float] = Field(None, gt=0)
-    description: Optional[str] = None
-    sku: str = Field(..., min_length=1, max_length=50)
-    stock_quantity: int = Field(default=0, ge=0)
-    reorder_level: int = Field(default=10, ge=0)
-    is_active: bool = True
+# Property Schemas (converted from Product)
+class PropertyBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    price: str = Field(..., min_length=1, max_length=100)
+    location: Optional[str] = Field(default="Gurgaon", max_length=100)
+    image_url: Optional[str] = Field(None, max_length=1024)
+    amenities: Optional[str] = Field(default="Wifi, AC, Power Backup", max_length=500)
+    is_available: bool = True
 
-class ProductCreate(ProductBase):
+class PropertyCreate(PropertyBase):
     pass
 
-class ProductUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    category: Optional[str] = Field(None, min_length=1, max_length=100)
-    subcategory: Optional[str] = Field(None, max_length=100)
-    brand: Optional[str] = Field(None, max_length=100)
-    price: Optional[float] = Field(None, gt=0)
-    cost: Optional[float] = Field(None, gt=0)
-    description: Optional[str] = None
-    stock_quantity: Optional[int] = Field(None, ge=0)
-    reorder_level: Optional[int] = Field(None, ge=0)
-    is_active: Optional[bool] = None
+class PropertyUpdate(BaseModel):
+    title: Optional[str] = Field(None, min_length=1, max_length=255)
+    price: Optional[str] = Field(None, min_length=1, max_length=100)
+    location: Optional[str] = Field(None, max_length=100)
+    image_url: Optional[str] = Field(None, max_length=1024)
+    amenities: Optional[str] = Field(None, max_length=500)
+    is_available: Optional[bool] = None
 
-class Product(ProductBase):
+class Property(PropertyBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime]
-    
+
     class Config:
         from_attributes = True
 
@@ -82,7 +73,11 @@ class Customer(CustomerBase):
     class Config:
         from_attributes = True
 
-# Sale Schemas
+"""
+Sale Schemas are commented out because the database Sale model referenced Products
+which have been converted to Properties. Re-enable and adapt these schemas if you
+intend to keep sales functionality tied to properties or restore a sales table.
+
 class SaleBase(BaseModel):
     product_id: int
     customer_id: int
@@ -104,11 +99,12 @@ class Sale(SaleBase):
     sale_date: datetime
     transaction_id: str
     created_at: datetime
-    product: Product
-    customer: Customer
+    # product: Product
+    # customer: Customer
     
     class Config:
         from_attributes = True
+"""
 
 # Analytics Schemas
 class SalesAnalytics(BaseModel):

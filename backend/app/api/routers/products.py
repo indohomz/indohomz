@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.database.connection import get_db
 from app.database import models
-from app.schemas.schemas import Product, ProductCreate, ProductUpdate
+from app.schemas.schemas import Property, PropertyCreate, PropertyUpdate
 from app.services.crud import product_service
 
 router = APIRouter()
 
-@router.get("/", response_model=List[Product])
+@router.get("/", response_model=List[Property])
 async def get_products(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
@@ -16,7 +16,7 @@ async def get_products(
     is_active: Optional[bool] = Query(None),
     db: Session = Depends(get_db)
 ):
-    """Get all products with optional filtering"""
+    """Get all properties"""
     products = product_service.get_products(
         db=db, 
         skip=skip, 
@@ -26,64 +26,56 @@ async def get_products(
     )
     return products
 
-@router.get("/{product_id}", response_model=Product)
-async def get_product(product_id: int, db: Session = Depends(get_db)):
-    """Get a specific product by ID"""
-    product = product_service.get_product(db=db, product_id=product_id)
+@router.get("/{property_id}", response_model=Property)
+async def get_product(property_id: int, db: Session = Depends(get_db)):
+    """Get a specific property by ID"""
+    product = product_service.get_product(db=db, product_id=property_id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found"
+            detail="Property not found"
         )
     return product
 
-@router.post("/", response_model=Product, status_code=status.HTTP_201_CREATED)
-async def create_product(product: ProductCreate, db: Session = Depends(get_db)):
-    """Create a new product"""
-    # Check if SKU already exists
-    existing_product = product_service.get_product_by_sku(db=db, sku=product.sku)
-    if existing_product:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Product with this SKU already exists"
-        )
-    
+@router.post("/", response_model=Property, status_code=status.HTTP_201_CREATED)
+async def create_product(product: PropertyCreate, db: Session = Depends(get_db)):
+    """Create a new property"""
     return product_service.create_product(db=db, product=product)
 
-@router.put("/{product_id}", response_model=Product)
+@router.put("/{property_id}", response_model=Property)
 async def update_product(
-    product_id: int, 
-    product_update: ProductUpdate, 
+    property_id: int,
+    product_update: PropertyUpdate,
     db: Session = Depends(get_db)
 ):
-    """Update a product"""
-    product = product_service.get_product(db=db, product_id=product_id)
+    """Update a property"""
+    product = product_service.get_product(db=db, product_id=property_id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found"
+            detail="Property not found"
         )
-    
+
     return product_service.update_product(
-        db=db, 
-        product_id=product_id, 
+        db=db,
+        product_id=property_id,
         product_update=product_update
     )
 
-@router.delete("/{product_id}")
-async def delete_product(product_id: int, db: Session = Depends(get_db)):
-    """Delete a product (soft delete by setting is_active to False)"""
-    product = product_service.get_product(db=db, product_id=product_id)
+@router.delete("/{property_id}")
+async def delete_product(property_id: int, db: Session = Depends(get_db)):
+    """Mark a property as unavailable"""
+    product = product_service.get_product(db=db, product_id=property_id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found"
+            detail="Property not found"
         )
-    
-    product_service.delete_product(db=db, product_id=product_id)
-    return {"message": "Product deleted successfully"}
 
-@router.get("/category/{category}", response_model=List[Product])
+    product_service.delete_product(db=db, product_id=property_id)
+    return {"message": "Property marked unavailable"}
+
+@router.get("/category/{category}", response_model=List[Property])
 async def get_products_by_category(
     category: str,
     skip: int = Query(0, ge=0),
@@ -101,9 +93,5 @@ async def get_products_by_category(
 
 @router.get("/low-stock/alert")
 async def get_low_stock_products(db: Session = Depends(get_db)):
-    """Get products with stock below reorder level"""
-    products = product_service.get_low_stock_products(db=db)
-    return {
-        "count": len(products),
-        "products": products
-    }
+    """Placeholder: low-stock alerts are not applicable for properties"""
+    return {"count": 0, "products": []}
