@@ -1,12 +1,12 @@
 """
-Database initialization script for Retail Analytics Platform
+Database initialization script for IndoHomz Real Estate Platform
 """
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import sys
 
 def create_database():
-    """Create the retail_analytics database if it doesn't exist"""
+    """Create the indohomz_properties database if it doesn't exist"""
     try:
         # Connect to PostgreSQL server
         conn = psycopg2.connect(
@@ -19,14 +19,14 @@ def create_database():
         cursor = conn.cursor()
         
         # Check if database exists
-        cursor.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'retail_analytics'")
+        cursor.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'indohomz_properties'")
         exists = cursor.fetchone()
         
         if not exists:
-            cursor.execute('CREATE DATABASE retail_analytics')
-            print("✅ Database 'retail_analytics' created successfully!")
+            cursor.execute('CREATE DATABASE indohomz_properties')
+            print("✅ Database 'indohomz_properties' created successfully!")
         else:
-            print("ℹ️ Database 'retail_analytics' already exists.")
+            print("ℹ️ Database 'indohomz_properties' already exists.")
             
         cursor.close()
         conn.close()
