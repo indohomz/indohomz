@@ -1,0 +1,296 @@
+[
+  {
+    "title": "Luxury Apartment near Central Park",
+    "price": "150000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Wifi, AC, Power Backup, Gym"
+  },
+  {
+    "title": "Cozy Studio in Downtown",
+    "price": "85000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Wifi, Power Backup"
+  },
+  {
+    "title": "3BHK Family Home with Garden",
+    "price": "220000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Garden, Parking, Wifi"
+  },
+  {
+    "title": "Modern Condo with Skyline View",
+    "price": "195000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Gym, Pool, Wifi, AC"
+  },
+  {
+    "title": "Penthouse Suite with Terrace",
+    "price": "480000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Terrace, Private Lift, Pool"
+  },
+  {
+    "title": "Budget 1BHK near Metro",
+    "price": "60000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Metro Access, Power Backup"
+  },
+  {
+    "title": "Elegant Villa in Quiet Colony",
+    "price": "350000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Garden, Garage, Security"
+  },
+  {
+    "title": "Serviced Apartment Close to Business Park",
+    "price": "130000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Housekeeping, Wifi, AC"
+  },
+  {
+    "title": "Studio Loft with Open Plan",
+    "price": "90000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Open Plan, Wifi"
+  },
+  {
+    "title": "Countryside Bungalow",
+    "price": "270000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Large Garden, Parking"
+  },
+  {
+    "title": "Lakeview Apartment",
+    "price": "210000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Lake View, Gym, Pool"
+  },
+  {
+    "title": "Compact 2BHK for Couples",
+    "price": "120000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Parking, Wifi"
+  },
+  {
+    "title": "Designer Flat with Smart Home Features",
+    "price": "240000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Smart Home, AC, Wifi"
+  },
+  {
+    "title": "Affordable Shared Accommodation",
+    "price": "30000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Shared Kitchen, Wifi"
+  },
+  {
+    "title": "Luxury Duplex near Shopping District",
+    "price": "310000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Terrace, Parking, Gym"
+  },
+  {
+    "title": "Green Residences - Eco Friendly",
+    "price": "180000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Solar, Garden, Wifi"
+  },
+  {
+    "title": "Compact Executive Studio",
+    "price": "75000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "AC, Wifi"
+  },
+  {
+    "title": "Family-Oriented Apartment",
+    "price": "160000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Play Area, Parking"
+  },
+  {
+    "title": "Mountain View Retreat",
+    "price": "290000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Scenic View, Garden"
+  },
+  {
+    "title": "Studio with Floor-to-Ceiling Windows",
+    "price": "98000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Natural Light, Wifi"
+  },
+  {
+    "title": "Classic Colonial House",
+    "price": "400000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Large Lot, Garage"
+  },
+  {
+    "title": "Minimalist Apartment",
+    "price": "115000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Modern Fixtures, Wifi"
+  },
+  {
+    "title": "Riverside Condo",
+    "price": "230000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "River View, Pool"
+  },
+  {
+    "title": "Urban Townhouse",
+    "price": "205000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Garage, Rooftop"
+  },
+  {
+    "title": "Coastal Style Apartment",
+    "price": "175000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Sea-themed, AC"
+  },
+  {
+    "title": "Victorian Charming Home",
+    "price": "330000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Historic Style, Garden"
+  },
+  {
+    "title": "High-Rise Studio",
+    "price": "99000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Gym, Wifi"
+  },
+  {
+    "title": "Sunset Boulevard Apartment",
+    "price": "145000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Balcony, Parking"
+  },
+  {
+    "title": "Ranch Style Family Home",
+    "price": "260000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Single Story, Large Yard"
+  },
+  {
+    "title": "Designer Penthouse",
+    "price": "520000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Private Pool, Concierge"
+  },
+  {
+    "title": "Suburban 2BHK",
+    "price": "140000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Community Park, Parking"
+  },
+  {
+    "title": "City Center Loft",
+    "price": "200000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Open Plan, Rooftop Access"
+  },
+  {
+    "title": "Eco-Luxury Villa",
+    "price": "420000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Solar, Pool, Garden"
+  },
+  {
+    "title": "Compact Micro-Apartment",
+    "price": "45000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Efficient Layout, Wifi"
+  },
+  {
+    "title": "Retro Bungalow",
+    "price": "285000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Character Home, Garden"
+  },
+  {
+    "title": "Skyline View Residence",
+    "price": "370000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Panoramic View, Gym"
+  },
+  {
+    "title": "Harborfront Apartment",
+    "price": "255000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Waterfront, Pool"
+  },
+  {
+    "title": "Loft with Industrial Charm",
+    "price": "150000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Exposed Brick, High Ceilings"
+  },
+  {
+    "title": "Patio Home with Private Courtyard",
+    "price": "210000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Private Courtyard, Parking"
+  },
+  {
+    "title": "Contemporary Duplex",
+    "price": "295000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Modern Kitchen, Terrace"
+  },
+  {
+    "title": "Garden-Level Flat",
+    "price": "125000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Private Garden, Pet Friendly"
+  },
+  {
+    "title": "Minimal Studio Close to Campus",
+    "price": "52000",
+    "location": "Gurgaon",
+    "image_url": null,
+    "amenities": "Student-Friendly, Wifi"
+  }
+]
