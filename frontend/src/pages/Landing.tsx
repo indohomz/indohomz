@@ -3,6 +3,7 @@ import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { ArrowRight, BarChart3, Shield, Sparkles, Zap, ShoppingCart, Package, Users, Warehouse, LineChart as Line, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import Hero from '../components/Hero'
 
 // Animation variants for scroll effects
 const fadeInUp = {
@@ -72,6 +73,9 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-indigo-50/50 to-white dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 text-neutral-900 dark:text-neutral-100">
+      {/* Hero Video Section */}
+      <Hero />
+
       {/* Navbar */}
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-neutral-900/60 border-b border-neutral-200/60 dark:border-neutral-800/60">
         <div className="container-shell h-16 flex items-center justify-between">
