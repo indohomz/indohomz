@@ -1,42 +1,56 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+/**
+ * IndoHomz - Premium Co-Living Platform
+ * Main Application Router
+ */
+
+import { Routes, Route } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
-import Layout from './components/Layout/Layout'
-import WelcomeScreen from './components/WelcomeScreen'
 import Landing from './pages/Landing'
 
 // Code-split pages
-const Dashboard = lazy(() => import('./pages/Dashboard'))
-const Products = lazy(() => import('./pages/Products'))
-const Sales = lazy(() => import('./pages/Sales'))
-const Customers = lazy(() => import('./pages/Customers'))
-const Analytics = lazy(() => import('./pages/Analytics'))
-const Reports = lazy(() => import('./pages/Reports'))
-const Inventory = lazy(() => import('./pages/Inventory'))
+const Properties = lazy(() => import('./pages/Properties'))
+const PropertyDetail = lazy(() => import('./pages/PropertyDetail'))
+
+// Loading Spinner - Light theme
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="w-14 h-14 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-gray-500 text-sm">Loading...</p>
+    </div>
+  </div>
+)
 
 function App() {
-  const location = useLocation();
-  const isLanding = location.pathname === '/';
-
-  // Show welcome screen only when entering the app shell for the first time
-  const isFirstVisit = !localStorage.getItem('ra_visited');
-  if (!isLanding && isFirstVisit) {
-    localStorage.setItem('ra_visited', 'true');
-    return <WelcomeScreen />;
-  }
-
   return (
     <Routes>
-      {/* Landing page route */}
+      {/* Landing Page */}
       <Route path="/" element={<Landing />} />
       
-      {/* App routes with Layout */}
-      <Route path="/dashboard" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Dashboard /></Suspense></Layout>} />
-      <Route path="/products" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Products /></Suspense></Layout>} />
-      <Route path="/sales" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Sales /></Suspense></Layout>} />
-      <Route path="/customers" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Customers /></Suspense></Layout>} />
-      <Route path="/inventory" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Inventory /></Suspense></Layout>} />
-      <Route path="/analytics" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Analytics /></Suspense></Layout>} />
-      <Route path="/reports" element={<Layout><Suspense fallback={<div className="py-24 text-center text-neutral-500">Loading...</div>}><Reports /></Suspense></Layout>} />
+      {/* Properties Listing */}
+      <Route 
+        path="/properties" 
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <Properties />
+          </Suspense>
+        } 
+      />
+      
+      {/* Property Detail */}
+      <Route 
+        path="/property/:slug" 
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <PropertyDetail />
+          </Suspense>
+        } 
+      />
+      
+      {/* Redirects for old routes */}
+      <Route path="/home" element={<Landing />} />
+      <Route path="/dashboard" element={<Landing />} />
+      <Route path="/products" element={<Suspense fallback={<PageLoader />}><Properties /></Suspense>} />
     </Routes>
   )
 }

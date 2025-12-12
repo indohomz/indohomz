@@ -3,98 +3,118 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
 
+
 class Property(Base):
+    """
+    IndoHomz Property Model
+    Represents a luxury rental property listing
+    """
     __tablename__ = "properties"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False, index=True)
-    price = Column(String(100), nullable=False)
-    location = Column(String(100), nullable=False, default="Gurgaon")
+    slug = Column(String(255), nullable=True, unique=True, index=True)  # URL-friendly identifier
+    
+    # Pricing
+    price = Column(String(100), nullable=False)  # e.g., "₹15,000/month"
+    
+    # Location
+    location = Column(String(255), nullable=False, default="Gurgaon")
+    area = Column(String(100), nullable=True)  # e.g., "Sector 45", "Cyberhub"
+    city = Column(String(100), nullable=False, default="Gurgaon")
+    
+    # Property Details
+    property_type = Column(String(50), default="apartment")  # apartment, villa, studio, penthouse, pg
+    bedrooms = Column(Integer, nullable=True)  # 1, 2, 3, etc. (null for studio/PG)
+    bathrooms = Column(Integer, nullable=True)
+    area_sqft = Column(Integer, nullable=True)  # Square footage
+    furnishing = Column(String(50), default="furnished")  # furnished, semi-furnished, unfurnished
+    
+    # Media
     image_url = Column(String(1024), nullable=True)
-    amenities = Column(String(500), nullable=False, default="Wifi, AC, Power Backup")
+    images = Column(Text, nullable=True)  # JSON array of additional image URLs
+    
+    # Features
+    amenities = Column(Text, nullable=False, default="Wifi, AC, Power Backup")  # Comma-separated or JSON
+    highlights = Column(Text, nullable=True)  # Key selling points
+    
+    # AI-Generated Content
+    description = Column(Text, nullable=True)  # AI-generated property description
+    
+    # Availability
     is_available = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-class Customer(Base):
-    __tablename__ = "customers"
+    available_from = Column(DateTime(timezone=True), nullable=True)
     
-    id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String(50), nullable=False)
-    last_name = Column(String(50), nullable=False)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    phone = Column(String(20), nullable=True)
-    address = Column(Text, nullable=True)
-    city = Column(String(100), nullable=True, index=True)
-    state = Column(String(50), nullable=True)
-    zip_code = Column(String(20), nullable=True)
-    country = Column(String(50), default="USA")
-    date_of_birth = Column(DateTime, nullable=True)
-    customer_segment = Column(String(50), nullable=True, index=True)
-    total_spent = Column(Float, default=0.0)
-    total_orders = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
+    # Metadata
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relationships
-    # sales relationship removed because Sale model has been commented out
-    # sales = relationship("Sale", back_populates="customer")
+    # Future: For vector search (pgvector)
+    # embedding = Column(Vector(1536), nullable=True)  # OpenAI ada-002 embedding
 
-"""
-class Sale(Base):
-    __tablename__ = "sales"
+
+class Lead(Base):
+    """
+    IndoHomz Lead/Inquiry Model
+    Represents a potential customer inquiry
+    """
+    __tablename__ = "leads"
     
     id = Column(Integer, primary_key=True, index=True)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False, index=True)
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
-    quantity = Column(Integer, nullable=False)
-    unit_price = Column(Float, nullable=False)
-    total_amount = Column(Float, nullable=False)
-    discount_amount = Column(Float, default=0.0)
-    tax_amount = Column(Float, default=0.0)
-    final_amount = Column(Float, nullable=False)
-    sale_date = Column(DateTime(timezone=True), server_default=func.now(), index=True)
-    payment_method = Column(String(50), nullable=True)
-    store_location = Column(String(100), nullable=True, index=True)
-    sales_channel = Column(String(50), default="in-store", index=True)  # online, in-store, mobile
-    transaction_id = Column(String(100), unique=True, nullable=False, index=True)
+    
+    # Contact Info
+    name = Column(String(100), nullable=False)
+    email = Column(String(255), nullable=True, index=True)
+    phone = Column(String(20), nullable=False, index=True)
+    
+    # Inquiry Details
+    property_id = Column(Integer, ForeignKey("properties.id"), nullable=True, index=True)
+    message = Column(Text, nullable=True)
+    preferred_visit_date = Column(DateTime(timezone=True), nullable=True)
+    
+    # Lead Status
+    status = Column(String(50), default="new")  # new, contacted, site_visit, negotiation, converted, lost
+    source = Column(String(50), default="website")  # website, whatsapp, referral, instagram
+    
+    # Metadata
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    product = relationship("Product", back_populates="sales")
-    customer = relationship("Customer", back_populates="sales")
-"""
+    property = relationship("Property", backref="leads")
 
-"""
-class Inventory(Base):
-    __tablename__ = "inventory"
+
+class Booking(Base):
+    """
+    IndoHomz Booking Model
+    Represents a confirmed property booking/rental
+    """
+    __tablename__ = "bookings"
     
     id = Column(Integer, primary_key=True, index=True)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False, index=True)
-    store_location = Column(String(100), nullable=False, index=True)
-    current_stock = Column(Integer, nullable=False)
-    reserved_stock = Column(Integer, default=0)
-    available_stock = Column(Integer, nullable=False)
-    last_restocked = Column(DateTime(timezone=True), nullable=True)
-    last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
-    # Relationships
-    product = relationship("Product")
-"""
-
-"""
-class SalesPrediction(Base):
-    __tablename__ = "sales_predictions"
+    # References
+    property_id = Column(Integer, ForeignKey("properties.id"), nullable=False, index=True)
+    lead_id = Column(Integer, ForeignKey("leads.id"), nullable=True, index=True)
     
-    id = Column(Integer, primary_key=True, index=True)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False, index=True)
-    prediction_date = Column(DateTime(timezone=True), nullable=False, index=True)
-    predicted_quantity = Column(Float, nullable=False)
-    confidence_score = Column(Float, nullable=True)
-    model_version = Column(String(50), nullable=True)
+    # Tenant Info
+    tenant_name = Column(String(100), nullable=False)
+    tenant_email = Column(String(255), nullable=True)
+    tenant_phone = Column(String(20), nullable=False)
+    
+    # Booking Details
+    check_in = Column(DateTime(timezone=True), nullable=False)
+    check_out = Column(DateTime(timezone=True), nullable=True)  # Null for long-term rentals
+    monthly_rent = Column(Float, nullable=False)
+    security_deposit = Column(Float, nullable=True)
+    
+    # Status
+    status = Column(String(50), default="confirmed")  # confirmed, active, completed, cancelled
+    
+    # Metadata
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    product = relationship("Product")
-"""
+    property = relationship("Property", backref="bookings")
+    lead = relationship("Lead", backref="bookings")

@@ -1,321 +1,425 @@
+"""
+IndoHomz CRUD Services
+Handles all database operations for properties, leads, and bookings.
+"""
+
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
+from sqlalchemy import and_, or_, func, desc
 from typing import List, Optional
 from datetime import datetime
+import re
+
 from app.database import models
 from app.schemas import schemas
 
-class ProductService:
-    """Service adapted to work with Property model while keeping
-    the public service name to minimize changes across the codebase.
-    """
-    def get_product(self, db: Session, product_id: int):
-        return db.query(models.Property).filter(models.Property.id == product_id).first()
 
-    def get_product_by_sku(self, db: Session, sku: str):
-        # Properties don't have SKU; return None
-        return None
+def generate_slug(title: str) -> str:
+    """Generate URL-friendly slug from title"""
+    slug = title.lower().strip()
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[\s_-]+', '-', slug)
+    slug = re.sub(r'^-+|-+$', '', slug)
+    return slug
 
-    def get_products(
+
+# =============================================================================
+# PROPERTY SERVICE
+# =============================================================================
+
+class PropertyService:
+    """Service for Property CRUD operations"""
+    
+    def get_property(self, db: Session, property_id: int) -> Optional[models.Property]:
+        """Get a single property by ID"""
+        return db.query(models.Property).filter(models.Property.id == property_id).first()
+    
+    def get_property_by_slug(self, db: Session, slug: str) -> Optional[models.Property]:
+        """Get a property by its URL slug"""
+        return db.query(models.Property).filter(models.Property.slug == slug).first()
+    
+    def get_properties(
         self,
         db: Session,
         skip: int = 0,
-        limit: int = 100,
-        category: Optional[str] = None,
-        is_active: Optional[bool] = None
-    ):
-        # Ignore category/is_active filters — return properties
+        limit: int = 12,
+        is_available: Optional[bool] = None,
+        city: Optional[str] = None,
+        location: Optional[str] = None,
+        property_type: Optional[str] = None,
+        min_bedrooms: Optional[int] = None,
+        max_price: Optional[int] = None,
+    ) -> List[models.Property]:
+        """Get properties with optional filters"""
         query = db.query(models.Property)
-        return query.offset(skip).limit(limit).all()
-
-    def get_products_by_category(
-        self,
-        db: Session,
-        category: str,
-        skip: int = 0,
-        limit: int = 100
-    ):
-        # Not applicable for properties; return empty list
-        return []
-
-    def get_low_stock_products(self, db: Session):
-        # Not applicable for properties
-        return []
-
-    def create_product(self, db: Session, product: schemas.PropertyCreate):
-        # Map property schema to Property model fields
-        payload = product.dict()
-        db_obj = models.Property(
-            title=payload.get("title"),
-            price=payload.get("price"),
-            location=payload.get("location", "Gurgaon"),
-            image_url=payload.get("image_url"),
-            amenities=payload.get("amenities", "Wifi, AC, Power Backup"),
-            is_available=payload.get("is_available", True)
-        )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-    def update_product(
-        self,
-        db: Session,
-        product_id: int,
-        product_update: schemas.PropertyUpdate
-    ):
-        db_product = self.get_product(db, product_id)
-        if db_product:
-            update_data = product_update.dict(exclude_unset=True)
-            for field, value in update_data.items():
-                # map price/title/location/image_url/amenities/is_available
-                setattr(db_product, field, value)
-            db.commit()
-            db.refresh(db_product)
-        return db_product
-
-    def delete_product(self, db: Session, product_id: int):
-        db_product = self.get_product(db, product_id)
-        if db_product:
-            # Soft-delete by marking unavailable
-            db_product.is_available = False
-            db.commit()
-        return db_product
-
-class CustomerService:
-    def get_customer(self, db: Session, customer_id: int):
-        return db.query(models.Customer).filter(models.Customer.id == customer_id).first()
-    
-    def get_customer_by_email(self, db: Session, email: str):
-        return db.query(models.Customer).filter(models.Customer.email == email).first()
-    
-    def get_customers(
-        self, 
-        db: Session, 
-        skip: int = 0, 
-        limit: int = 100,
-        customer_segment: Optional[str] = None,
-        is_active: Optional[bool] = None
-    ):
-        query = db.query(models.Customer)
         
-        if customer_segment:
-            query = query.filter(models.Customer.customer_segment == customer_segment)
-        if is_active is not None:
-            query = query.filter(models.Customer.is_active == is_active)
-            
+        if is_available is not None:
+            query = query.filter(models.Property.is_available == is_available)
+        if city:
+            query = query.filter(models.Property.city.ilike(f"%{city}%"))
+        if location:
+            query = query.filter(models.Property.location.ilike(f"%{location}%"))
+        if property_type:
+            query = query.filter(models.Property.property_type == property_type)
+        if min_bedrooms is not None:
+            query = query.filter(models.Property.bedrooms >= min_bedrooms)
+        
+        # Order by newest first
+        query = query.order_by(desc(models.Property.created_at))
+        
         return query.offset(skip).limit(limit).all()
     
-    def get_customers_by_segment(
-        self, 
-        db: Session, 
-        segment: str, 
-        skip: int = 0, 
-        limit: int = 100
-    ):
-        return db.query(models.Customer).filter(
-            models.Customer.customer_segment == segment,
-            models.Customer.is_active == True
-        ).offset(skip).limit(limit).all()
+    def get_properties_count(
+        self,
+        db: Session,
+        is_available: Optional[bool] = None,
+        city: Optional[str] = None,
+    ) -> int:
+        """Get total count of properties with filters"""
+        query = db.query(func.count(models.Property.id))
+        
+        if is_available is not None:
+            query = query.filter(models.Property.is_available == is_available)
+        if city:
+            query = query.filter(models.Property.city.ilike(f"%{city}%"))
+        
+        return query.scalar() or 0
     
-    def create_customer(self, db: Session, customer: schemas.CustomerCreate):
-        db_customer = models.Customer(**customer.dict())
-        db.add(db_customer)
+    def get_available_properties(self, db: Session, skip: int = 0, limit: int = 12):
+        """Get only available properties"""
+        return self.get_properties(db, skip=skip, limit=limit, is_available=True)
+    
+    def search_properties(
+        self,
+        db: Session,
+        query_text: Optional[str] = None,
+        filters: Optional[dict] = None,
+        skip: int = 0,
+        limit: int = 12,
+    ) -> List[models.Property]:
+        """Search properties by text and filters"""
+        query = db.query(models.Property)
+        
+        # Text search across multiple fields
+        if query_text:
+            search_term = f"%{query_text}%"
+            query = query.filter(
+                or_(
+                    models.Property.title.ilike(search_term),
+                    models.Property.location.ilike(search_term),
+                    models.Property.area.ilike(search_term),
+                    models.Property.amenities.ilike(search_term),
+                    models.Property.description.ilike(search_term),
+                )
+            )
+        
+        # Apply additional filters
+        if filters:
+            if filters.get("city"):
+                query = query.filter(models.Property.city.ilike(f"%{filters['city']}%"))
+            if filters.get("property_type"):
+                query = query.filter(models.Property.property_type == filters["property_type"])
+            if filters.get("bedrooms"):
+                query = query.filter(models.Property.bedrooms == filters["bedrooms"])
+            if filters.get("is_available") is not None:
+                query = query.filter(models.Property.is_available == filters["is_available"])
+        
+        return query.offset(skip).limit(limit).all()
+    
+    def create_property(self, db: Session, property_data: schemas.PropertyCreate) -> models.Property:
+        """Create a new property"""
+        data = property_data.model_dump()
+        
+        # Generate slug from title
+        base_slug = generate_slug(data.get("title", "property"))
+        slug = base_slug
+        counter = 1
+        
+        # Ensure unique slug
+        while self.get_property_by_slug(db, slug):
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        
+        db_property = models.Property(**data, slug=slug)
+        db.add(db_property)
         db.commit()
-        db.refresh(db_customer)
-        return db_customer
+        db.refresh(db_property)
+        return db_property
     
-    def update_customer(
-        self, 
-        db: Session, 
-        customer_id: int, 
-        customer_update: schemas.CustomerUpdate
-    ):
-        db_customer = self.get_customer(db, customer_id)
-        if db_customer:
-            update_data = customer_update.dict(exclude_unset=True)
-            for field, value in update_data.items():
-                setattr(db_customer, field, value)
-            db.commit()
-            db.refresh(db_customer)
-        return db_customer
+    def update_property(
+        self,
+        db: Session,
+        property_id: int,
+        property_update: schemas.PropertyUpdate
+    ) -> Optional[models.Property]:
+        """Update an existing property"""
+        db_property = self.get_property(db, property_id)
+        if not db_property:
+            return None
+        
+        update_data = property_update.model_dump(exclude_unset=True)
+        
+        # Update slug if title changed
+        if "title" in update_data:
+            update_data["slug"] = generate_slug(update_data["title"])
+        
+        for field, value in update_data.items():
+            setattr(db_property, field, value)
+        
+        db.commit()
+        db.refresh(db_property)
+        return db_property
     
-    def delete_customer(self, db: Session, customer_id: int):
-        db_customer = self.get_customer(db, customer_id)
-        if db_customer:
-            db_customer.is_active = False
-            db.commit()
-        return db_customer
+    def delete_property(self, db: Session, property_id: int) -> bool:
+        """Soft delete a property (mark as unavailable)"""
+        db_property = self.get_property(db, property_id)
+        if not db_property:
+            return False
+        
+        db_property.is_available = False
+        db.commit()
+        return True
     
-    def get_customer_stats(self, db: Session, customer_id: int):
-        # Get customer sales statistics
-        sales_stats = db.query(
-            func.sum(models.Sale.final_amount).label('total_spent'),
-            func.count(models.Sale.id).label('total_orders'),
-            func.avg(models.Sale.final_amount).label('avg_order_value')
-        ).filter(models.Sale.customer_id == customer_id).first()
+    def hard_delete_property(self, db: Session, property_id: int) -> bool:
+        """Permanently delete a property"""
+        db_property = self.get_property(db, property_id)
+        if not db_property:
+            return False
+        
+        db.delete(db_property)
+        db.commit()
+        return True
+    
+    def get_featured_properties(self, db: Session, limit: int = 6) -> List[models.Property]:
+        """Get featured/highlighted properties for homepage"""
+        return db.query(models.Property).filter(
+            models.Property.is_available == True
+        ).order_by(desc(models.Property.created_at)).limit(limit).all()
+    
+    def get_property_stats(self, db: Session) -> dict:
+        """Get property statistics for dashboard"""
+        total = db.query(func.count(models.Property.id)).scalar() or 0
+        available = db.query(func.count(models.Property.id)).filter(
+            models.Property.is_available == True
+        ).scalar() or 0
+        
+        # Property type distribution
+        type_dist = db.query(
+            models.Property.property_type,
+            func.count(models.Property.id).label("count")
+        ).group_by(models.Property.property_type).all()
+        
+        # Location distribution
+        location_dist = db.query(
+            models.Property.city,
+            func.count(models.Property.id).label("count")
+        ).group_by(models.Property.city).order_by(desc("count")).limit(5).all()
         
         return {
-            "total_spent": float(sales_stats.total_spent or 0),
-            "total_orders": int(sales_stats.total_orders or 0),
-            "avg_order_value": float(sales_stats.avg_order_value or 0)
+            "total_properties": total,
+            "available_properties": available,
+            "rented_properties": total - available,
+            "property_types": [{"type": t, "count": c} for t, c in type_dist],
+            "top_locations": [{"city": c, "count": cnt} for c, cnt in location_dist],
         }
 
-# DISABLED: SaleService not adapted for Property domain yet
-# class SaleService:
-#     def get_sale(self, db: Session, sale_id: int):
-#         return db.query(models.Sale).filter(models.Sale.id == sale_id).first()
-#     
-#     def get_sales(
-#         self,
-#         db: Session,
-#         skip: int = 0,
-#         limit: int = 100,
-#         start_date: Optional[datetime] = None,
-#         end_date: Optional[datetime] = None,
-#         customer_id: Optional[int] = None,
-#         product_id: Optional[int] = None
-#     ):
-#         query = db.query(models.Sale)
-#         
-#         if start_date:
-#             query = query.filter(models.Sale.sale_date >= start_date)
-#         if end_date:
-#             query = query.filter(models.Sale.sale_date <= end_date)
-#         if customer_id:
-#             query = query.filter(models.Sale.customer_id == customer_id)
-#         if product_id:
-#             query = query.filter(models.Sale.product_id == product_id)
-#             
-#         return query.offset(skip).limit(limit).all()
-#     
-#     def get_sales_by_customer(
-#         self, 
-#         db: Session, 
-#         customer_id: int, 
-#         skip: int = 0, 
-#         limit: int = 100
-#     ):
-#         return db.query(models.Sale).filter(
-#             models.Sale.customer_id == customer_id
-#         ).offset(skip).limit(limit).all()
-#     
-#     def get_sales_by_product(
-#         self, 
-#         db: Session, 
-#         product_id: int, 
-#         skip: int = 0, 
-#         limit: int = 100
-#     ):
-#         return db.query(models.Sale).filter(
-#             models.Sale.product_id == product_id
-#         ).offset(skip).limit(limit).all()
-#     
-#     def create_sale(self, db: Session, sale: schemas.SaleCreate):
-#         # Calculate totals
-#         total_amount = sale.quantity * sale.unit_price
-#         final_amount = total_amount - sale.discount_amount + sale.tax_amount
-#         
-#         # Validate product and customer exist
-#         product = db.query(models.Product).filter(models.Product.id == sale.product_id).first()
-#         if not product:
-#             raise ValueError("Product not found")
-#             
-#         customer = db.query(models.Customer).filter(models.Customer.id == sale.customer_id).first()
-#         if not customer:
-#             raise ValueError("Customer not found")
-#         
-#         # Check stock availability
-#         if product.stock_quantity < sale.quantity:
-#             raise ValueError("Insufficient stock")
-#         
-#         # Create sale
-#         db_sale = models.Sale(
-#             **sale.dict(),
-#             total_amount=total_amount,
-#             final_amount=final_amount
-#         )
-#         db.add(db_sale)
-#         
-#         # Update product stock
-#         product.stock_quantity -= sale.quantity
-#         
-#         # Update customer totals
-#         customer.total_spent += final_amount
-#         customer.total_orders += 1
-#         
-#         db.commit()
-#         db.refresh(db_sale)
-#         return db_sale
-#     
-#     def get_daily_sales_summary(self, db: Session, date: datetime):
-#         sales_data = db.query(
-#             func.sum(models.Sale.final_amount).label('total_revenue'),
-#             func.count(models.Sale.id).label('total_orders'),
-#             func.avg(models.Sale.final_amount).label('avg_order_value')
-#         ).filter(
-#             func.date(models.Sale.sale_date) == date
-#         ).first()
-#         
-#         return {
-#             "date": date.isoformat(),
-#             "total_revenue": float(sales_data.total_revenue or 0),
-#             "total_orders": int(sales_data.total_orders or 0),
-#             "avg_order_value": float(sales_data.avg_order_value or 0)
-#         }
-#     
-#     def get_weekly_sales_summary(self, db: Session, week_start: datetime):
-#         from datetime import timedelta
-#         week_end = week_start + timedelta(days=7)
-#         
-#         sales_data = db.query(
-#             func.sum(models.Sale.final_amount).label('total_revenue'),
-#             func.count(models.Sale.id).label('total_orders'),
-#             func.avg(models.Sale.final_amount).label('avg_order_value')
-#         ).filter(
-#             and_(
-#                 models.Sale.sale_date >= week_start,
-#                 models.Sale.sale_date < week_end
-#             )
-#         ).first()
-#         
-#         return {
-#             "week_start": week_start.isoformat(),
-#             "week_end": week_end.isoformat(),
-#             "total_revenue": float(sales_data.total_revenue or 0),
-#             "total_orders": int(sales_data.total_orders or 0),
-#             "avg_order_value": float(sales_data.avg_order_value or 0)
-#         }
-#     
-#     def get_monthly_sales_summary(self, db: Session, year: int, month: int):
-#         from datetime import date
-#         start_date = date(year, month, 1)
-#         if month == 12:
-#             end_date = date(year + 1, 1, 1)
-#         else:
-#             end_date = date(year, month + 1, 1)
-#         
-#         sales_data = db.query(
-#             func.sum(models.Sale.final_amount).label('total_revenue'),
-#             func.count(models.Sale.id).label('total_orders'),
-#             func.avg(models.Sale.final_amount).label('avg_order_value')
-#         ).filter(
-#             and_(
-#                 models.Sale.sale_date >= start_date,
-#                 models.Sale.sale_date < end_date
-#             )
-#         ).first()
-#         
-#         return {
-#             "year": year,
-#             "month": month,
-#             "total_revenue": float(sales_data.total_revenue or 0),
-#             "total_orders": int(sales_data.total_orders or 0),
-#             "avg_order_value": float(sales_data.avg_order_value or 0)
-#         }
+
+# =============================================================================
+# LEAD SERVICE
+# =============================================================================
+
+class LeadService:
+    """Service for Lead/Inquiry CRUD operations"""
+    
+    def get_lead(self, db: Session, lead_id: int) -> Optional[models.Lead]:
+        """Get a single lead by ID"""
+        return db.query(models.Lead).filter(models.Lead.id == lead_id).first()
+    
+    def get_leads(
+        self,
+        db: Session,
+        skip: int = 0,
+        limit: int = 50,
+        status: Optional[str] = None,
+        source: Optional[str] = None,
+    ) -> List[models.Lead]:
+        """Get leads with optional filters"""
+        query = db.query(models.Lead)
+        
+        if status:
+            query = query.filter(models.Lead.status == status)
+        if source:
+            query = query.filter(models.Lead.source == source)
+        
+        return query.order_by(desc(models.Lead.created_at)).offset(skip).limit(limit).all()
+    
+    def get_leads_by_property(self, db: Session, property_id: int) -> List[models.Lead]:
+        """Get all leads for a specific property"""
+        return db.query(models.Lead).filter(
+            models.Lead.property_id == property_id
+        ).order_by(desc(models.Lead.created_at)).all()
+    
+    def create_lead(self, db: Session, lead_data: schemas.LeadCreate) -> models.Lead:
+        """Create a new lead/inquiry"""
+        db_lead = models.Lead(**lead_data.model_dump(), status="new")
+        db.add(db_lead)
+        db.commit()
+        db.refresh(db_lead)
+        return db_lead
+    
+    def update_lead(
+        self,
+        db: Session,
+        lead_id: int,
+        lead_update: schemas.LeadUpdate
+    ) -> Optional[models.Lead]:
+        """Update a lead"""
+        db_lead = self.get_lead(db, lead_id)
+        if not db_lead:
+            return None
+        
+        update_data = lead_update.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(db_lead, field, value)
+        
+        db.commit()
+        db.refresh(db_lead)
+        return db_lead
+    
+    def update_lead_status(self, db: Session, lead_id: int, status: str) -> Optional[models.Lead]:
+        """Quick update just the lead status"""
+        db_lead = self.get_lead(db, lead_id)
+        if not db_lead:
+            return None
+        
+        db_lead.status = status
+        db.commit()
+        db.refresh(db_lead)
+        return db_lead
+    
+    def get_lead_stats(self, db: Session) -> dict:
+        """Get lead statistics for dashboard"""
+        total = db.query(func.count(models.Lead.id)).scalar() or 0
+        
+        # Status distribution
+        status_dist = db.query(
+            models.Lead.status,
+            func.count(models.Lead.id).label("count")
+        ).group_by(models.Lead.status).all()
+        
+        # Source distribution
+        source_dist = db.query(
+            models.Lead.source,
+            func.count(models.Lead.id).label("count")
+        ).group_by(models.Lead.source).all()
+        
+        # Calculate conversion rate
+        converted = db.query(func.count(models.Lead.id)).filter(
+            models.Lead.status == "converted"
+        ).scalar() or 0
+        
+        return {
+            "total_leads": total,
+            "new_leads": next((c for s, c in status_dist if s == "new"), 0),
+            "converted_leads": converted,
+            "conversion_rate": round((converted / total * 100) if total > 0 else 0, 2),
+            "by_status": [{"status": s, "count": c} for s, c in status_dist],
+            "by_source": [{"source": s, "count": c} for s, c in source_dist],
+        }
 
 
-# Create service instances
-product_service = ProductService()
-customer_service = CustomerService()
-# sale_service = SaleService()  # DISABLED: not adapted yet
+# =============================================================================
+# BOOKING SERVICE
+# =============================================================================
+
+class BookingService:
+    """Service for Booking CRUD operations"""
+    
+    def get_booking(self, db: Session, booking_id: int) -> Optional[models.Booking]:
+        """Get a single booking by ID"""
+        return db.query(models.Booking).filter(models.Booking.id == booking_id).first()
+    
+    def get_bookings(
+        self,
+        db: Session,
+        skip: int = 0,
+        limit: int = 50,
+        status: Optional[str] = None,
+    ) -> List[models.Booking]:
+        """Get bookings with optional filters"""
+        query = db.query(models.Booking)
+        
+        if status:
+            query = query.filter(models.Booking.status == status)
+        
+        return query.order_by(desc(models.Booking.created_at)).offset(skip).limit(limit).all()
+    
+    def get_bookings_by_property(self, db: Session, property_id: int) -> List[models.Booking]:
+        """Get all bookings for a specific property"""
+        return db.query(models.Booking).filter(
+            models.Booking.property_id == property_id
+        ).order_by(desc(models.Booking.created_at)).all()
+    
+    def create_booking(self, db: Session, booking_data: schemas.BookingCreate) -> models.Booking:
+        """Create a new booking"""
+        # Mark property as unavailable
+        property_obj = db.query(models.Property).filter(
+            models.Property.id == booking_data.property_id
+        ).first()
+        if property_obj:
+            property_obj.is_available = False
+        
+        db_booking = models.Booking(**booking_data.model_dump(), status="confirmed")
+        db.add(db_booking)
+        db.commit()
+        db.refresh(db_booking)
+        return db_booking
+    
+    def update_booking(
+        self,
+        db: Session,
+        booking_id: int,
+        booking_update: schemas.BookingUpdate
+    ) -> Optional[models.Booking]:
+        """Update a booking"""
+        db_booking = self.get_booking(db, booking_id)
+        if not db_booking:
+            return None
+        
+        update_data = booking_update.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(db_booking, field, value)
+        
+        db.commit()
+        db.refresh(db_booking)
+        return db_booking
+    
+    def cancel_booking(self, db: Session, booking_id: int) -> Optional[models.Booking]:
+        """Cancel a booking and make property available again"""
+        db_booking = self.get_booking(db, booking_id)
+        if not db_booking:
+            return None
+        
+        db_booking.status = "cancelled"
+        
+        # Make property available again
+        property_obj = db.query(models.Property).filter(
+            models.Property.id == db_booking.property_id
+        ).first()
+        if property_obj:
+            property_obj.is_available = True
+        
+        db.commit()
+        db.refresh(db_booking)
+        return db_booking
+
+
+# =============================================================================
+# SERVICE INSTANCES (for backward compatibility with existing routers)
+# =============================================================================
+
+property_service = PropertyService()
+lead_service = LeadService()
+booking_service = BookingService()
+
+# Legacy alias for existing routers that use product_service
+product_service = property_service

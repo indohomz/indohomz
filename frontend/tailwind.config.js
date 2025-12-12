@@ -83,8 +83,11 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        display: ['Inter', 'ui-sans-serif', 'system-ui'],
+        sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui'],
+        display: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui'],
+      },
+      screens: {
+        'xs': '480px',
       },
       boxShadow: {
         xs: '0 1px 2px 0 rgba(0,0,0,0.05)',
