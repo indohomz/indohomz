@@ -76,38 +76,38 @@ const PROPERTIES = [
   {
     id: 1,
     title: "The Luxe Studio",
-    subtitle: "Cyberhub Premium Living",
+    subtitle: "Executive Workspace Living",
     price: "₹22,000",
     location: "DLF Cybercity, Sector 24",
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
     beds: 1, baths: 1, sqft: 650,
-    amenities: ["WiFi", "Gym", "Pool"],
+    amenities: ["High-Speed WiFi", "Fitness Centre", "Infinity Pool"],
     rating: 4.9, reviews: 128,
-    badge: "Most Popular",
+    badge: "Bestseller",
     color: "indigo"
   },
   {
     id: 2,
     title: "Golf View Residence",
-    subtitle: "Premium 2BHK Apartment",
+    subtitle: "Ultra-Premium Sanctuary",
     price: "₹45,000",
     location: "Golf Course Road, Sector 54",
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
     beds: 2, baths: 2, sqft: 1200,
-    amenities: ["WiFi", "Gym", "Parking", "Concierge"],
+    amenities: ["Smart Home", "Private Gym", "Valet Parking", "Concierge"],
     rating: 4.8, reviews: 89,
-    badge: "Premium",
+    badge: "Premium Collection",
     color: "cyan"
   },
   {
     id: 3,
     title: "Urban Co-Living Hub",
-    subtitle: "Community Living Space",
+    subtitle: "Where Community Thrives",
     price: "₹14,000",
     location: "Sohna Road, Sector 49",
     image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop",
     beds: 1, baths: 1, sqft: 400,
-    amenities: ["WiFi", "Meals", "Events"],
+    amenities: ["Gourmet Meals", "Social Events", "Co-working Space"],
     rating: 4.7, reviews: 256,
     badge: "Best Value",
     color: "emerald"
@@ -115,14 +115,14 @@ const PROPERTIES = [
   {
     id: 4,
     title: "Skyline Penthouse",
-    subtitle: "Exclusive Top Floor Living",
+    subtitle: "Above the Ordinary",
     price: "₹85,000",
     location: "MG Road, Sector 28",
     image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
     beds: 3, baths: 3, sqft: 2200,
-    amenities: ["WiFi", "Gym", "Rooftop", "Smart Home"],
+    amenities: ["Panoramic Views", "Private Terrace", "Smart Automation"],
     rating: 5.0, reviews: 42,
-    badge: "Luxury",
+    badge: "Ultra Luxury",
     color: "amber"
   }
 ]
@@ -130,32 +130,32 @@ const PROPERTIES = [
 const TESTIMONIALS = [
   {
     name: "Aditya Sharma",
-    role: "Tech Lead, Microsoft",
+    role: "Engineering Lead, Microsoft",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    text: "IndoHomz completely changed how I think about renting. Found my dream apartment in 48 hours with zero hassle. The virtual tour feature is a game-changer!",
+    text: "IndoHomz redefined my expectations of rental living. The seamless digital experience—from virtual tours to instant documentation—is truly exceptional. Moved into my dream apartment within 48 hours.",
     rating: 5
   },
   {
     name: "Priya Kapoor",
-    role: "Product Designer, Figma",
+    role: "Senior Designer, Figma",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    text: "As someone who relocated from Bangalore, I was skeptical. But the verified listings and 24/7 support made it seamless. Highly recommend for professionals!",
+    text: "Relocating from Bangalore, I needed a trustworthy platform. IndoHomz delivered with verified listings, transparent pricing, and exceptional concierge support. A truly premium experience for professionals.",
     rating: 5
   },
   {
     name: "Rahul Verma",
-    role: "MBA Graduate, ISB",
+    role: "MBA Alumnus, ISB Hyderabad",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-    text: "The community events at my co-living space are incredible. Made lifelong friends here. IndoHomz understands what young professionals need.",
+    text: "Beyond just accommodation—it's a lifestyle. The curated community events and networking opportunities have been invaluable. IndoHomz truly understands what ambitious professionals seek.",
     rating: 5
   }
 ]
 
 const STATS = [
-  { value: "500+", label: "Happy Residents", icon: Users },
-  { value: "50+", label: "Premium Properties", icon: Building2 },
-  { value: "4.9", label: "Average Rating", icon: Star },
-  { value: "24/7", label: "Support Available", icon: Headphones }
+  { value: "500+", label: "Satisfied Residents", icon: Users },
+  { value: "50+", label: "Curated Properties", icon: Building2 },
+  { value: "4.9★", label: "Excellence Rating", icon: Star },
+  { value: "24/7", label: "Dedicated Support", icon: Headphones }
 ]
 
 const LOCATIONS = [
@@ -499,7 +499,7 @@ export default function Landing() {
               className="px-4 py-2 rounded-full bg-emerald-50 border border-emerald-100 text-sm font-medium text-emerald-700 flex items-center gap-2"
             >
               <BadgeCheck className="h-4 w-4 text-emerald-500" />
-              #1 in Gurgaon
+              Gurgaon's Premier Choice
             </motion.div>
           </div>
           
@@ -509,9 +509,9 @@ export default function Landing() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight tracking-tight"
           >
-            <span className="block text-gray-900">Premium Living</span>
+            <span className="block text-gray-900">Luxury Living,</span>
             <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Spaces Reimagined
+              Thoughtfully Curated
             </span>
           </motion.h1>
           
@@ -521,8 +521,8 @@ export default function Landing() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Discover curated co-living spaces for modern professionals. 
-            <span className="text-gray-900 font-medium"> Zero brokerage. Verified properties. Move in today.</span>
+            Experience meticulously designed co-living spaces crafted for discerning professionals. 
+            <span className="text-gray-900 font-medium"> Zero brokerage. Verified excellence. Instant move-in.</span>
           </motion.p>
           
           {/* Search Box with Google Maps */}
@@ -636,11 +636,11 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Explore Locations</span>
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Prime Locations</span>
             <h2 className="text-3xl sm:text-4xl font-bold mt-3 text-gray-900">
-              Find Properties <span className="text-indigo-600">Near You</span>
+              Discover Your Ideal <span className="text-indigo-600">Neighbourhood</span>
             </h2>
-            <p className="text-gray-500 mt-3 max-w-lg mx-auto">Discover premium living spaces across Gurgaon's most sought-after neighborhoods</p>
+            <p className="text-gray-500 mt-3 max-w-lg mx-auto">Explore premium residences in Gurgaon's most prestigious and well-connected localities</p>
           </motion.div>
           
           <div className="grid lg:grid-cols-2 gap-8 items-stretch">
@@ -725,20 +725,20 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Why Choose Us</span>
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">The IndoHomz Difference</span>
             <h2 className="text-3xl sm:text-4xl font-bold mt-3 text-gray-900">
-              Renting, <span className="text-indigo-600">Revolutionized</span>
+              Renting, <span className="text-indigo-600">Elevated</span>
             </h2>
-            <p className="text-gray-500 mt-3 max-w-xl mx-auto">We're not just another rental platform. We're building the future of urban living.</p>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">We're not just a rental platform—we're redefining the standard for urban living excellence.</p>
           </motion.div>
           
           <div className="grid md:grid-cols-3 gap-6">
-            <FeatureCard icon={Shield} title="100% Verified" description="Every property personally inspected and verified by our team. No fake listings, ever." color="indigo" delay={0.1} />
-            <FeatureCard icon={Zap} title="Instant Booking" description="Move in within 24 hours. Digital contracts, instant approvals, zero paperwork." color="amber" delay={0.2} />
-            <FeatureCard icon={CreditCard} title="Zero Brokerage" description="Save up to ₹50,000 in brokerage fees. Pay only for what matters." color="emerald" delay={0.3} />
-            <FeatureCard icon={Award} title="Premium Amenities" description="From high-speed WiFi to gym access, our properties come fully loaded." color="cyan" delay={0.4} />
-            <FeatureCard icon={Headphones} title="24/7 Concierge" description="Round-the-clock support for all your needs. We're always here for you." color="rose" delay={0.5} />
-            <FeatureCard icon={Globe} title="Neighborhood OS" description="Explore area vibes, nearby gyms, cafes, and metros before you move." color="indigo" delay={0.6} />
+            <FeatureCard icon={Shield} title="Verified Excellence" description="Every property undergoes rigorous inspection by our expert team. Authenticity guaranteed, no exceptions." color="indigo" delay={0.1} />
+            <FeatureCard icon={Zap} title="Seamless Onboarding" description="From inquiry to move-in within 24 hours. Digital documentation, instant verification, zero friction." color="amber" delay={0.2} />
+            <FeatureCard icon={CreditCard} title="Zero Brokerage" description="Transparent pricing with no hidden fees. Save up to ₹50,000—invest in experiences, not commissions." color="emerald" delay={0.3} />
+            <FeatureCard icon={Award} title="Signature Amenities" description="Enterprise-grade WiFi, state-of-the-art fitness centres, and curated lifestyle services included." color="cyan" delay={0.4} />
+            <FeatureCard icon={Headphones} title="Dedicated Concierge" description="Round-the-clock assistance from our hospitality-trained team. Your comfort is our commitment." color="rose" delay={0.5} />
+            <FeatureCard icon={Globe} title="Neighbourhood Intelligence" description="AI-powered insights on local amenities, commute times, and area vibes before you commit." color="indigo" delay={0.6} />
           </div>
         </div>
       </section>
@@ -753,16 +753,17 @@ export default function Landing() {
             className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4"
           >
             <div>
-              <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Featured</span>
+              <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Curated Collection</span>
               <h2 className="text-3xl sm:text-4xl font-bold mt-3 text-gray-900">
-                Handpicked <span className="text-indigo-600">Spaces</span>
+                Signature <span className="text-indigo-600">Residences</span>
               </h2>
+              <p className="text-gray-500 mt-2 max-w-md">Handpicked properties that exemplify our commitment to excellence</p>
             </div>
             <Link 
               to="/properties"
               className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors group"
             >
-              View all properties
+              Explore Full Portfolio
               <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
@@ -784,10 +785,11 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Testimonials</span>
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-widest">Resident Stories</span>
             <h2 className="text-3xl sm:text-4xl font-bold mt-3 text-gray-900">
-              Loved by <span className="text-indigo-600">Residents</span>
+              Endorsed by <span className="text-indigo-600">Industry Leaders</span>
             </h2>
+            <p className="text-gray-500 mt-3 max-w-lg mx-auto">Hear from professionals who've elevated their lifestyle with IndoHomz</p>
           </motion.div>
           
           <div className="grid md:grid-cols-3 gap-6">
@@ -817,10 +819,10 @@ export default function Landing() {
             </motion.div>
             
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-5 text-white">
-              Ready to Find Your <span className="text-amber-300">Dream Home?</span>
+              Ready to Elevate Your <span className="text-amber-300">Lifestyle?</span>
             </h2>
             <p className="text-lg text-white/80 mb-8 max-w-md mx-auto">
-              Join 500+ happy residents. Zero brokerage. Move in today.
+              Join an exclusive community of 500+ professionals. Premium living awaits.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -860,7 +862,7 @@ export default function Landing() {
                 <span className="text-xl font-bold">IndoHomz</span>
               </div>
               <p className="text-gray-400 mb-5 max-w-sm">
-                Premium co-living spaces for modern professionals. Experience community living at its finest.
+                Redefining urban living for ambitious professionals. Where exceptional spaces meet extraordinary communities.
               </p>
               <div className="flex gap-3">
                 <a href="https://wa.me/919999999999" target="_blank" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-green-600 transition-colors">

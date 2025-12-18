@@ -40,49 +40,49 @@ const SAMPLE_PROPERTIES = [
     id: 1, title: "The Luxe Studio", price: "₹22,000", location: "DLF Cybercity, Sector 24",
     image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
     bedrooms: 1, bathrooms: 1, area_sqft: 650, property_type: "studio", is_available: true,
-    amenities: "WiFi, Gym, Pool, AC", slug: "luxe-studio"
+    amenities: "High-Speed WiFi, Fitness Centre, Infinity Pool, Climate Control", slug: "luxe-studio"
   },
   {
     id: 2, title: "Golf View Residence", price: "₹45,000", location: "Golf Course Road, Sector 54",
     image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
     bedrooms: 2, bathrooms: 2, area_sqft: 1200, property_type: "apartment", is_available: true,
-    amenities: "WiFi, Gym, Parking, Concierge, AC", slug: "golf-view"
+    amenities: "Smart Home, Private Gym, Valet Parking, 24/7 Concierge, AC", slug: "golf-view"
   },
   {
     id: 3, title: "Urban Co-Living Hub", price: "₹14,000", location: "Sohna Road, Sector 49",
     image_url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop",
     bedrooms: 1, bathrooms: 1, area_sqft: 400, property_type: "co_living", is_available: true,
-    amenities: "WiFi, Meals, Events, AC", slug: "urban-hub"
+    amenities: "Gourmet Meals, Social Events, Co-working Space, AC", slug: "urban-hub"
   },
   {
     id: 4, title: "Skyline Penthouse", price: "₹85,000", location: "MG Road, Sector 28",
     image_url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
     bedrooms: 3, bathrooms: 3, area_sqft: 2200, property_type: "penthouse", is_available: true,
-    amenities: "WiFi, Gym, Rooftop, Smart Home, AC", slug: "skyline-penthouse"
+    amenities: "Panoramic Views, Private Terrace, Smart Automation, AC", slug: "skyline-penthouse"
   },
   {
-    id: 5, title: "Modern 1BHK near Metro", price: "₹18,000", location: "HUDA City Centre, Sector 29",
+    id: 5, title: "Metro Connect Suite", price: "₹18,000", location: "HUDA City Centre, Sector 29",
     image_url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
     bedrooms: 1, bathrooms: 1, area_sqft: 550, property_type: "apartment", is_available: true,
-    amenities: "WiFi, AC, Parking", slug: "modern-1bhk"
+    amenities: "Fibre WiFi, Climate Control, Reserved Parking", slug: "metro-connect"
   },
   {
     id: 6, title: "Premium Studio Loft", price: "₹28,000", location: "Cyber City, Sector 24",
     image_url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop",
     bedrooms: 1, bathrooms: 1, area_sqft: 750, property_type: "studio", is_available: false,
-    amenities: "WiFi, Gym, Rooftop Access, AC", slug: "premium-loft"
+    amenities: "Enterprise WiFi, Fitness Studio, Rooftop Lounge, AC", slug: "premium-loft"
   },
   {
     id: 7, title: "Executive Suite", price: "₹35,000", location: "Sector 56, Near Golf Course",
     image_url: "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=800&h=600&fit=crop",
     bedrooms: 2, bathrooms: 2, area_sqft: 1000, property_type: "apartment", is_available: true,
-    amenities: "WiFi, Gym, Pool, Concierge, AC", slug: "executive-suite"
+    amenities: "Smart WiFi, Gym Access, Infinity Pool, Personal Concierge, AC", slug: "executive-suite"
   },
   {
-    id: 8, title: "Cozy Studio Apartment", price: "₹16,000", location: "Sector 47, Near Metro",
+    id: 8, title: "Artisan Studio", price: "₹16,000", location: "Sector 47, Near Metro",
     image_url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
     bedrooms: 1, bathrooms: 1, area_sqft: 450, property_type: "studio", is_available: true,
-    amenities: "WiFi, AC, Power Backup", slug: "cozy-studio"
+    amenities: "High-Speed WiFi, Climate Control, Power Backup", slug: "artisan-studio"
   }
 ]
 
@@ -130,7 +130,7 @@ const PropertyCard = ({ property, index }: { property: any; index: number }) => 
                   ? 'bg-emerald-500 text-white' 
                   : 'bg-gray-500 text-white'
               }`}>
-                {property.is_available ? 'Available' : 'Rented'}
+                {property.is_available ? 'Available Now' : 'Currently Occupied'}
               </span>
             </div>
             
@@ -312,7 +312,7 @@ export default function Properties() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search by location, property type..."
+                  placeholder="Search by neighbourhood, amenities, or style..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm"
@@ -455,9 +455,9 @@ export default function Properties() {
         >
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              <span className="text-indigo-600">{filteredProperties.length}</span> Properties
+              <span className="text-indigo-600">{filteredProperties.length}</span> Curated Residences
             </h1>
-            <p className="text-gray-500 mt-1">Premium rentals in Gurgaon</p>
+            <p className="text-gray-500 mt-1">Exceptional living spaces across Gurgaon's premier localities</p>
           </div>
         </motion.div>
 
@@ -497,8 +497,8 @@ export default function Properties() {
             <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
               <Home className="h-10 w-10 text-gray-400" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">No properties found</h3>
-            <p className="text-gray-500 mb-8">Try adjusting your filters or search terms</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Matching Residences</h3>
+            <p className="text-gray-500 mb-8">Refine your search criteria to discover your perfect space</p>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -509,7 +509,7 @@ export default function Properties() {
               }}
               className="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold shadow-lg shadow-indigo-200"
             >
-              Clear Filters
+              Reset Filters
             </motion.button>
           </motion.div>
         )}
