@@ -133,6 +133,15 @@ class Settings(BaseSettings):
     # ==========================================================================
     DEFAULT_PAGE_SIZE: int = 12
     MAX_PAGE_SIZE: int = 50
+    
+    # ==========================================================================
+    # REDIS CACHING
+    # ==========================================================================
+    REDIS_ENABLED: bool = os.getenv("REDIS_ENABLED", "False").lower() == "true"
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    CACHE_TTL_PROPERTIES: int = 300  # 5 minutes
+    CACHE_TTL_ANALYTICS: int = 600  # 10 minutes
+    CACHE_TTL_FEATURED: int = 900  # 15 minutes
 
 
 # Create settings instance

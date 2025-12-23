@@ -29,5 +29,9 @@ faker==20.1.0
 # GenAI client
 openai==1.3.8
 
+# Performance (Phase 3)
+redis==5.0.1
+hiredis==2.3.2
+
 # Note: ML libraries intentionally excluded for initial deployment
 # Install as needed: scikit-learn, pandas, numpy, torch, etc.

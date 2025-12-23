@@ -21,6 +21,7 @@ from app.database.connection import get_db, engine
 from app.database import models
 from app.core.config import settings, get_database_url
 from app.core.rate_limit import init_rate_limiting
+from app.core.cache import cache
 
 
 @asynccontextmanager
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI):
     print(f"   OpenAI: {'✓ Configured' if settings.OPENAI_API_KEY else '✗ Not configured'}")
     print(f"   reCAPTCHA: {'✓ Enabled' if settings.RECAPTCHA_ENABLED else '✗ Disabled'}")
     print(f"   Google Maps: {'✓ Configured' if settings.GOOGLE_MAPS_API_KEY else '✗ Not configured'}")
+    print(f"   Redis Cache: {'✓ Enabled' if settings.REDIS_ENABLED else '✗ Disabled (using in-memory)'}")
     print("=" * 50)
     
     # Create database tables

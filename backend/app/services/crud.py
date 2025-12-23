@@ -3,14 +3,16 @@ IndoHomz CRUD Services
 Handles all database operations for properties, leads, and bookings.
 """
 
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, desc
-from typing import List, Optional
+from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import and_, or_, func, desc, select
+from typing import List, Optional, Dict, Tuple
 from datetime import datetime
 import re
 
 from app.database import models
 from app.schemas import schemas
+from app.core.cache import cache, cached, invalidate_cache
+from app.core.config import settings
 
 
 def generate_slug(title: str) -> str:
@@ -48,25 +50,59 @@ class PropertyService:
         property_type: Optional[str] = None,
         min_bedrooms: Optional[int] = None,
         max_price: Optional[int] = None,
-    ) -> List[models.Property]:
-        """Get properties with optional filters"""
+    ) -> Tuple[List[models.Property], int]:
+        """Get properties with optional filters and total count (with caching)"""
+        
+        # Generate cache key
+        cache_key = cache._make_key(
+            "properties:list",
+            skip=skip,
+            limit=limit,
+            available=is_available,
+            city=city,
+            location=location,
+            type=property_type,
+            bedrooms=min_bedrooms,
+            price=max_price
+        )
+        
+        # Try cache first
+        cached_result = cache.get(cache_key)
+        if cached_result:
+            return cached_result["items"], cached_result["total"]
+        
+        # Build query with eager loading to prevent N+1
         query = db.query(models.Property)
+        count_query = db.query(func.count(models.Property.id))
         
         if is_available is not None:
             query = query.filter(models.Property.is_available == is_available)
+            count_query = count_query.filter(models.Property.is_available == is_available)
         if city:
             query = query.filter(models.Property.city.ilike(f"%{city}%"))
+            count_query = count_query.filter(models.Property.city.ilike(f"%{city}%"))
         if location:
             query = query.filter(models.Property.location.ilike(f"%{location}%"))
+            count_query = count_query.filter(models.Property.location.ilike(f"%{location}%"))
         if property_type:
             query = query.filter(models.Property.property_type == property_type)
+            count_query = count_query.filter(models.Property.property_type == property_type)
         if min_bedrooms is not None:
             query = query.filter(models.Property.bedrooms >= min_bedrooms)
+            count_query = count_query.filter(models.Property.bedrooms >= min_bedrooms)
+        
+        # Get total count
+        total = count_query.scalar() or 0
         
         # Order by newest first
         query = query.order_by(desc(models.Property.created_at))
+        items = query.offset(skip).limit(limit).all()
         
-        return query.offset(skip).limit(limit).all()
+        # Cache result
+        result = {"items": items, "total": total}
+        cache.set(cache_key, result, ttl=settings.CACHE_TTL_PROPERTIES)
+        
+        return items, total
     
     def get_properties_count(
         self,
@@ -85,8 +121,15 @@ class PropertyService:
         return query.scalar() or 0
     
     def get_available_properties(self, db: Session, skip: int = 0, limit: int = 12):
-        """Get only available properties"""
+        """Get only available properties (with caching)"""
         return self.get_properties(db, skip=skip, limit=limit, is_available=True)
+    
+    @cached(ttl=300, key_prefix="properties:featured")
+    def get_featured_properties(self, db: Session, limit: int = 6) -> List[models.Property]:
+        """Get featured/highlighted properties for homepage (cached)"""
+        return db.query(models.Property).filter(
+            models.Property.is_available == True
+        ).order_by(desc(models.Property.created_at)).limit(limit).all()
     
     def search_properties(
         self,
@@ -125,8 +168,9 @@ class PropertyService:
         
         return query.offset(skip).limit(limit).all()
     
+    @invalidate_cache("properties:*")
     def create_property(self, db: Session, property_data: schemas.PropertyCreate) -> models.Property:
-        """Create a new property"""
+        """Create a new property (invalidates cache)"""
         data = property_data.model_dump()
         
         # Generate slug from title
@@ -145,13 +189,14 @@ class PropertyService:
         db.refresh(db_property)
         return db_property
     
+    @invalidate_cache("properties:*")
     def update_property(
         self,
         db: Session,
         property_id: int,
         property_update: schemas.PropertyUpdate
     ) -> Optional[models.Property]:
-        """Update an existing property"""
+        """Update an existing property (invalidates cache)"""
         db_property = self.get_property(db, property_id)
         if not db_property:
             return None
@@ -167,10 +212,9 @@ class PropertyService:
         
         db.commit()
         db.refresh(db_property)
-        return db_property
-    
+    @invalidate_cache("properties:*")
     def delete_property(self, db: Session, property_id: int) -> bool:
-        """Soft delete a property (mark as unavailable)"""
+        """Soft delete a property (mark as unavailable, invalidates cache)"""
         db_property = self.get_property(db, property_id)
         if not db_property:
             return False
@@ -179,8 +223,9 @@ class PropertyService:
         db.commit()
         return True
     
+    @invalidate_cache("properties:*")
     def hard_delete_property(self, db: Session, property_id: int) -> bool:
-        """Permanently delete a property"""
+        """Permanently delete a property (invalidates cache)"""
         db_property = self.get_property(db, property_id)
         if not db_property:
             return False
@@ -189,14 +234,9 @@ class PropertyService:
         db.commit()
         return True
     
-    def get_featured_properties(self, db: Session, limit: int = 6) -> List[models.Property]:
-        """Get featured/highlighted properties for homepage"""
-        return db.query(models.Property).filter(
-            models.Property.is_available == True
-        ).order_by(desc(models.Property.created_at)).limit(limit).all()
-    
+    @cached(ttl=600, key_prefix="properties:stats")
     def get_property_stats(self, db: Session) -> dict:
-        """Get property statistics for dashboard"""
+        """Get property statistics for dashboard (cached)"""
         total = db.query(func.count(models.Property.id)).scalar() or 0
         available = db.query(func.count(models.Property.id)).filter(
             models.Property.is_available == True

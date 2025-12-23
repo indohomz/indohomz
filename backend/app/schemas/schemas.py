@@ -94,9 +94,9 @@ class PropertyListResponse(BaseModel):
     """Paginated property list response"""
     items: List[Property]
     total: int
-    page: int
-    page_size: int
-    total_pages: int
+    skip: int
+    limit: int
+    has_more: bool
 
 
 # =============================================================================

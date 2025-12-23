@@ -19,6 +19,7 @@ from app.schemas.schemas import (
     PropertySearchResponse,
 )
 from app.services.crud import property_service
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -27,10 +28,15 @@ router = APIRouter()
 # LIST & SEARCH
 # =============================================================================
 
-@router.get("/", response_model=List[Property])
+@router.get("/", response_model=PropertyListResponse)
 async def get_properties(
     skip: int = Query(0, ge=0, description="Number of properties to skip"),
-    limit: int = Query(12, ge=1, le=50, description="Max properties to return"),
+    limit: int = Query(
+        default=settings.DEFAULT_PAGE_SIZE,
+        ge=1, 
+        le=settings.MAX_PAGE_SIZE,
+        description="Max properties to return"
+    ),
     is_available: Optional[bool] = Query(None, description="Filter by availability"),
     city: Optional[str] = Query(None, description="Filter by city"),
     location: Optional[str] = Query(None, description="Search in location"),
@@ -41,9 +47,9 @@ async def get_properties(
     """
     Get all properties with optional filters.
     
-    Returns a paginated list of properties. Use query parameters to filter results.
+    Returns a paginated list with total count for proper pagination UI.
     """
-    properties = property_service.get_properties(
+    properties, total = property_service.get_properties(
         db=db,
         skip=skip,
         limit=limit,
@@ -53,7 +59,14 @@ async def get_properties(
         property_type=property_type,
         min_bedrooms=bedrooms,
     )
-    return properties
+    
+    return PropertyListResponse(
+        items=properties,
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=(skip + limit) < total
+    )
 
 
 @router.get("/featured", response_model=List[Property])
